@@ -514,7 +514,23 @@ $('#mensajepagoproveedores').html("<span id='ACTUALIZADO' >"+data+"</span>");
 
 
 
-
+//NOMBRE DEL BOTÓN
+$(document).on('click', '.view_dataSUBIRF', function(){
+var personal_id = $(this).attr('id');
+$.ajax({
+url:'ventasoperaciones2/VistaPreviapagoproveedor3.php',
+method:'POST',
+data:{personal_id:personal_id},
+beforeSend:function(){
+$('#mensajeventasoperaciones').html('cargando');
+},
+success:function(data){
+$('#personal_detalles').html(data);
+$('#dataModal').modal('toggle');
+$("#reset_totales").load(location.href + " #reset_totales");
+}
+});
+});
 
 
 

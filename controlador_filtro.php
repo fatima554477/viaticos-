@@ -119,12 +119,13 @@ $IVAXML = isset($_POST["IVAXML"])?trim($_POST["IVAXML"]):"";
 $IEPSXML = isset($_POST["IEPSXML"])?trim($_POST["IEPSXML"]):"";
 
 
-if($_SESSION['num_evento']==true){
-	$NUMERO_EVENTO = $_SESSION['num_evento'];
+if($_SESSION['NUMERO_CONSECUTIVO_PROVEE']==true){
+	$NUMERO_CONSECUTIVO_PROVEE = $_SESSION['NUMERO_CONSECUTIVO_PROVEE'];
 }
-if($_POST['NUMERO_EVENTO']==true){
-	$NUMERO_EVENTO = $_POST['NUMERO_EVENTO'];	
+if($_POST['NUMERO_CONSECUTIVO_PROVEE']==true){
+	$NUMERO_CONSECUTIVO_PROVEE = $_POST['NUMERO_CONSECUTIVO_PROVEE'];	
 }
+
 
 $per_page=intval($_POST["per_page"]);
 	$campos="*";
@@ -275,7 +276,7 @@ $per_page=intval($_POST["per_page"]);
             <tr>
 <th style="background:#c9e8e8"></th>
 <th style="background:#c9e8e8">#</th>
->
+
 
 <?php 
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FACTURA XML</th>
@@ -523,6 +524,7 @@ if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=
 <?php if($database->variablespermisos('','viaticosquitar','ver')=='si'){ ?>
 <th style="background:#c6eaaa;text-align:center">SIN 46%</th>
 <?php } ?>
+<th style="background:#c9e8e8;text-align:center"></th>
 <th style="background:#c9e8e8;text-align:center"></th>
 <th style="background:#c9e8e8;text-align:center"></th>
 
@@ -1004,6 +1006,7 @@ $SUBTOL2ig = $SUBTOL2i - $SUBTOL2g ;
 $propina12ig = $propina12i - $propina12g;
  ?>
 	
+		<td style="background:#c9e8e8"></td>
 		<td style="background:#c9e8e8"></td>
 		<td style="background:#c9e8e8"></td>
             </tr>			
@@ -1633,7 +1636,9 @@ if ($ncplleno && $uuidVacio && $SICOMPRO ) {
 <?php if($database->variablespermisos('','viaticos','modificar')=='si'){ ?>
 
 
-<input type="button" name="view" value="MODIFICAR" id="<?php echo $row["02SUBETUFACTURAid"]; ?>" class="btn btn-info btn-xs view_dataPAGOPROVEEmodifica" /><?php } ?></td>
+<input type="button" name="view" value="MODIFICAR" id="<?php echo $row["02SUBETUFACTURAid"]; ?>" class="btn btn-info btn-xs view_dataPAGOPROVEEmodifica" /><?php } ?></td><td>
+<?php if($database->variablespermisos('','SUBEF_VYO','ver')=='si'){ ?>
+<input type="button" name="view" value="SUBIR FACTURA" id="<?php echo $row["02SUBETUFACTURAid"]; ?>" class="btn btn-info btn-xs view_dataSUBIRF" /><?php } ?></td>
 <td><?php if($database->variablespermisos('','viaticos','borrar')=='si'){ ?>
 
 

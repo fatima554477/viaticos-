@@ -15,7 +15,7 @@ fecha fatis : 03/04/2024
 
 define('__ROOT1__', dirname(dirname(__FILE__)));
 include_once (__ROOT1__."/includes/error_reporting.php");
-include_once (__ROOT1__."/ventasoperaciones2/class.epcinnPP.php");
+include_once (__ROOT1__."/ventasoperaciones3/class.epcinnPP.php");
 
 $pagoproveedores= NEW accesoclase();
 $conexion = NEW colaboradores();
@@ -96,9 +96,16 @@ if($busqueda==true){
 }
 
 
-if($pasarpagado_id!='' and ($pasarpagado_text=='si' or $pasarpagado_text=='no') ){	
-echo $pagoproveedores->PASARPAGADOACTUALIZAR ($pasarpagado_id , $pasarpagado_text  );
+if (
+    $pasarpagado_id != '' &&
+    in_array($pasarpagado_text, ['si', 'no'], true)
+) {
+    echo $pagoproveedores->PASARPAGADOACTUALIZAR(
+        $pasarpagado_id,
+        $pasarpagado_text
+    );
 }
+
 
 
 $action = isset($_POST["action"])?$_POST["action"]:"";

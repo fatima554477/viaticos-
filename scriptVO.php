@@ -442,8 +442,9 @@ $.ajax({
 			$("#mensajepagoproveedores").html("<span id='ACTUALIZADO' >"+data+"</span>").delay(2000).fadeOut();
             $('#resettabla').load(location.href + ' #resettabla');	
 
-
+            
 			$.getScript(load(1));
+			location.reload();
 		
 
 			
@@ -522,12 +523,14 @@ url:'ventasoperaciones2/VistaPreviapagoproveedor3.php',
 method:'POST',
 data:{personal_id:personal_id},
 beforeSend:function(){
-$('#mensajeventasoperaciones').html('cargando');
+$('#mensajepagoproveedores').html('cargando');
 },
 success:function(data){
 $('#personal_detalles').html(data);
+
 $('#dataModal').modal('toggle');
 $("#reset_totales").load(location.href + " #reset_totales");
+
 }
 });
 });
@@ -852,7 +855,7 @@ $('#dataModal').modal('toggle');
 
 
 
-			$('#target1').hide("linear");
+	$('#target1').show("linear");
 			$('#target2').hide("linear");
 			$('#target3').hide("linear");
 			$('#target4').hide("linear");

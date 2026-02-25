@@ -83,6 +83,16 @@ $_SESSION['idusuario12']= '';
 				});
 			});
 		}
+				             function setCurrentFillingDate() {
+                       const fechaInput = document.querySelector('input[name="FECHA_DE_LLENADO"]');
+                       if(!fechaInput) {
+                               return;
+                       }
+                       const now = new Date();
+                       const pad = (value) => value.toString().padStart(2, '0');
+                       const formatted = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+                       fechaInput.value = formatted;
+               }
 		document.addEventListener("DOMContentLoaded", calcular);
 		$(document).on('change', 'input[type="checkbox"]', function(e) {
 			if(this.id == "MONTO_DEPOSITAR1") {
@@ -123,7 +133,7 @@ $_SESSION['idusuario12']= '';
                  <tr  style="background: #d2faf1" > 
 
            
-                 <th scope="row"> <label  for="formFileSm"  class="form-label">ADJUNTAR FACTURA(FORMATO XML)</label></th>
+                 <th scope="row"> <label  for="formFileSm"  class="form-label">ADJUNTAR FACTURA FORMATO &nbsp;<a style="color:red;font:12px">(XML)</a></a><BR><a style="color:red;font:12px">SI NO TIENES POR EL MOMENTO EL ARCHIVO XML, <br>PRIMERO DEBES CAPTURAR RAZÓN SOCIAL <br>Y DESPUÉS CARGAR EL PDF</a></label></th>
                  <td style="width:400px;">
 				 
 	
@@ -230,7 +240,7 @@ if( file_exists($url) ){
              <tr  style="background: #d2faf1" >  
 
              
-<th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA (FORMATO PDF)</label></th>
+<th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA FORMATO (PDF)</label></th>
 
 
 <td>
@@ -264,7 +274,7 @@ echo "<a target='_blank' href='includes/archivos/".$rowsube['ADJUNTAR_FACTURA_PD
         
                  <tr  style="background:#c5f58c"> 
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">NÚMERO CONSECUTIVO DE PAGO A PROVEEDORES</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">NÚMERO DE SOLICITUD</label></th>
                  <td> <input type="text" class="form-control"  required=""  value="<?php  echo $NUMERO_CONSECUTIVO_PROVEE = isset($_GET['NUMERO_CONSECUTIVO_PROVEE'])?$_GET['NUMERO_CONSECUTIVO_PROVEE']:''; ?>" name="NUMERO_CONSECUTIVO_PROVEE" placeholder=""  readonly="readonly"></div></td>
                  </tr>
 				 
@@ -411,39 +421,11 @@ var parametros = {
     <th scope="row"> <label for="validationCustom03" class="form-label">CONCEPTO DE LA FACTURA:</label></th>
     <td><div id="CONCEPTO_PROVEE2"><input type="text" class="form-control" id="CONCEPTO_PROVEE" required=""  value="<?php echo $Descripcion; ?>" name="CONCEPTO_PROVEE"placeholder="CONCEPTO DE LA FACTURA"></div></td>
                  </tr>
-                 <tr  style="background: #d2faf1" > 
-             <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR COTIZACIÓN O REPORTE: (CUAQUIER FORMATO)</label></th>
-             <td>
+				 
+				 
 
-
-
-  <div id="drop_file_zone" ondrop="upload_file(event,'ADJUNTAR_COTIZACION')" ondragover="return false" >
-  <p>Suelta aquí o busca tu archivo</p>
-  <p><input class="form-control form-control-sm" id="ADJUNTAR_COTIZACION" type="text" onkeydown="return false" onclick="file_explorer('ADJUNTAR_COTIZACION');"  VALUE="<?php echo $ADJUNTAR_COTIZACION; ?>" required /></p>
-  <input type="file" name="ADJUNTAR_COTIZACION" id="nono"/>
-
-  </div>
-  
-
-         
-         <div id="2ADJUNTAR_COTIZACION"><?php $listadosube = $pagoproveedores->Listado_subefacturadocto('ADJUNTAR_COTIZACION');
-
-while($rowsube=mysqli_fetch_array($listadosube)){
-echo "<a target='_blank' href='includes/archivos/".$rowsube['ADJUNTAR_COTIZACION']."' id='A".$rowsube['id']."' >Visualizar!</a> "." <span id='".$rowsube['id']."' class='view_dataSBborrar2' style='cursor:pointer;color:blue;'>Borrar!</span><span > ".$rowsube['fechaingreso']."</span>".'<br/>';	
-}
-
-
-         ?></div>				 
-         </td>
-         
-             </tr>
              
 
-                 <tr style="background: #d2faf1">  
-
-                 <th scope="row"> <label for="validationCustom03" class="form-label">MONTO TOTAL DE LA COTIZACIÓN O DEL ADEUDO:</label></th>
-                 <td>   <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $MONTO_TOTAL_COTIZACION_ADEUDO; ?>" name="MONTO_TOTAL_COTIZACION_ADEUDO"placeholder="MONTO TOTAL DE LA COTIZACÓN" onkeyup="comasainput('MONTO_TOTAL_COTIZACION_ADEUDO')"></td>
-                 </tr> </div>
              
              
 
@@ -644,18 +626,8 @@ echo "<a target='_blank' href='includes/archivos/".$rowsube['ADJUNTAR_COTIZACION
                  </tr>
 
  
+<input type="hidden"    value="SOLICITADO" name="STATUS_DE_PAGO">
 
-                 <tr style="background: #d2faf1" > 
-                             
-                 <th scope="row">  <label for="validationCustom02" class="form-label">STATUS DE PAGO:</label></th>
-                 <td>   <select class="form-select mb-3" aria-label="Default select example" id="validationCustom02" value="<?php echo $STATUS_DE_PAGO; ?>" required="" name="STATUS_DE_PAGO"> 
-                <strong>   <option style="background:#d9f9fa " <?php if($FORMATO_EVENTO=='PAGADO'){echo "selected";} ?> value="PAGADO">PAGADO</option></strong>
-				<strong>   <option style="background:#d9f9fa " <?php if($FORMATO_EVENTO=='COTIZADO'){echo "selected";} ?> value="COTIZADO">COTIZADO</option></strong>
-				<strong>   <option style="background:#d9f9fa " <?php if($FORMATO_EVENTO=='COTIZADO'){echo "selected";} ?> value="COTIZADO">CANCELADO</option></strong>
-				
-
-                   
-                 </tr>
               
 <tr  style="background: #d2faf1"> 
 
@@ -692,11 +664,11 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 
 				 
 <tr  style="background:#fcf3cf" >				 
-<th scope="row"> <label  for="validationCustom03" class="form-label">NOMBRE DEL EJECUTIVO QUE INGRESO ESTA FACTURA:</label></th>
+<th scope="row"> <label  for="validationCustom03" class="form-label">EJECUTIVO QUE INGRESO ESTA FACTURA:</label></th>
 <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $_SESSION["NOMBREUSUARIO"]; ?>" name="NOMBRE_DEL_AYUDO"placeholder="NOMBRE DEL EJECUTIVO" readonly="readonly"></td>
 </tr>					 
 <tr>
-    <th style="background: #d2faf1; text-align:left" scope="col">NOMBRE DEL EJECUTIVO QUE REALIZÓ LA COMPRA:</th>
+    <th style="background: #d2faf1; text-align:left" scope="col">EJECUTIVO QUE REALIZÓ ESTE GASTO:</th>
        <td  style="background: #d2faf1"  >
 <?php
 $encabezadoA = '';
@@ -756,7 +728,7 @@ echo $encabezadoA.$option2.'</select>';
 					 
 
          
-         <input type="hidden" style="width:200px;"  class="form-control" id="validationCustom03"   value="<?php echo date('d-m-Y'); ?>" name="FECHA_DE_LLENADO">
+   <input type="hidden" style="width:200px;" class="form-control" id="validationCustom03" value="<?php echo date('d-m-Y H:i:s'); ?>" name="FECHA_DE_LLENADO">
       
             
  
@@ -946,8 +918,8 @@ echo $encabezadoA.$option2.'</select>';
                  <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $Moneda; ?>" name="MONEDA_FACTURA" placeholder="MONEDA"readonly="readonly"></td>
                  </tr>
                  <tr>
-                    <th scope="row"> <label for="validationCustom03" class="form-label">MONEDA EXTRANGERA:</label></th>
-                 <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $MONEDA_EXTRANGERA_FACTURA; ?>" name="MONEDA_EXTRNGERA_FACTURA" placeholder="MONEDA EXTRANGERA"readonly="readonly"></td>
+                    <th scope="row"> <label for="validationCustom03" class="form-label">MONEDA EXTRANJERA:</label></th>
+                 <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $MONEDA_EXTRANGERA_FACTURA; ?>" name="MONEDA_EXTRNGERA_FACTURA" placeholder="MONEDA EXTRANJERA"readonly="readonly"></td>
                  </tr>
                  
 				 <tr>

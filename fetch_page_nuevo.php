@@ -23,6 +23,7 @@
 <td width="30%" align="center">
 	<span>Mostrar</span>
 	<select  class="form-select mb-3" id="per_page" onchange="load(1);">
+		<option value="10" <?php if(!empty($_REQUEST['per_page'])){echo 'selected';} ?>>10</option>
 		<option value="20" <?php if(!empty($_REQUEST['per_page'])){echo 'selected';} ?>>20</option>
 		<option value="40" <?php if($_REQUEST['per_page']=='40'){echo 'selected';} ?>>40</option>
 		<option value="100" <?php if($_REQUEST['per_page']=='100'){echo 'selected';} ?>>100</option>
@@ -89,6 +90,31 @@
 
 </div>
 </div>
+</div>
+
+<div class="modal fade" id="modalRechazoPago" tabindex="-1" role="dialog" aria-labelledby="modalRechazoPagoLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#ebf9e9;">
+                <h5 class="modal-title" id="modalRechazoPagoLabel">Motivo del rechazo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="cerrarModalRechazoPago();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal_rechazo_id" value="">
+                <textarea id="modal_rechazo_texto" class="form-control" rows="5" placeholder="Describe el motivo del rechazo"></textarea>
+                <div id="modal_rechazo_mensaje" style="margin-top:10px;font-size:12px;color:#666;"></div>
+            </div>
+            <div class="modal-footer" id="modal_rechazo_footer_editar">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cerrarModalRechazoPago();">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btn_guardar_rechazo_modal">Guardar</button>
+            </div>
+            <div class="modal-footer" id="modal_rechazo_footer_ver" style="display:none;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cerrarModalRechazoPago();">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?php

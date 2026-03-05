@@ -488,7 +488,7 @@ function STATUS_RECHAZADO(RECHAZADO_id){
 			var result = data.split('^');
 
 			$('#pasarpagado2').html("Cargando...").fadeIn().delay(500).fadeOut();
-
+              load(1);
 			
             if(result[1]=='si') $('#color_RECHAZADO'+RECHAZADO_id).css('background-color', '#ceffcc');
 

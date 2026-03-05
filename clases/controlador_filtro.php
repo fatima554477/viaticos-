@@ -286,7 +286,7 @@ $per_page=intval($_POST["per_page"]);
 <th style="background:#c9e8e8">DIRECCIÓN </th><!-antes finanzas y tesoreria->
 <th style="background:#c9e8e8">FINANZAS Y <br>TESORERÍA <br>(PAGADO)</th><!-antes pagado->
 <th style="background:#c9e8e8">AUDITORÍA</th>
-<?php if ($database->variablespermisos('', 'rechazo_pago', 'ver') == 'si') { ?>
+<?php if ($database->variablespermisos('', 'rechazo_pagoviatico', 'ver') == 'si') { ?>
 <th style="background:#c9e8e8">RECHAZADO</th>
 <?php } ?>
 
@@ -549,7 +549,7 @@ if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=
 <td style="background:#c9e8e8"></td>
 <td style="background:#c9e8e8"></td>
 <td style="background:#c9e8e8"></td>
-<?php if ($database->variablespermisos('', 'rechazo_pago', 'ver') == 'si') { ?>
+<?php if ($database->variablespermisos('', 'rechazo_pagoviatico', 'ver') == 'si') { ?>
 <td style="background:#c9e8e8"></td>
 <?php } ?>
 <?php  
@@ -1030,6 +1030,8 @@ $propina12ig = $propina12i - $propina12g;
 		</table>
 		<?php }else{ ?>		
         <tbody>
+
+
 <?php
 $finales = 0;
 $totales = 'no';
@@ -1038,16 +1040,24 @@ foreach ($datos as $key => $row) {
     $colspan = 0;
     $fondo_existe_xml = "";
     $fondo_existe_xml2 = "";
-    
-    // Si ID_RELACIONADO está vacío → AMARILLO (#fdfe87)
-    if (empty($row['ID_RELACIONADO'])) {
-        $fondo_existe_xml = "style='background-color: #fdfe87'"; 
-        $fondo_existe_xml2 = "style='background-color: #fdfe87'"; 
-    } 
-    // Si ID_RELACIONADO está lleno → BLANCO
-    else { 
-        $fondo_existe_xml = "style='background-color: white'"; 
-        $fondo_existe_xml2 = "style='background-color: white'"; 
+
+    // 1. PRIORIDAD: Si está rechazado → ROJO
+    if (isset($row['STATUS_RECHAZADO']) && strtolower(trim($row['STATUS_RECHAZADO'])) == 'si') {
+        $fondo_existe_xml  = "style='background-color:red'"; // rojo suave
+        $fondo_existe_xml2 = "style='background-color:red'";
+    }
+    // 2. Si NO está rechazado, aplicar lógica existente
+    else {
+        // Si ID_RELACIONADO está vacío → AMARILLO
+        if (empty($row['ID_RELACIONADO'])) {
+            $fondo_existe_xml  = "style='background-color: #fdfe87'";
+            $fondo_existe_xml2 = "style='background-color: #fdfe87'";
+        } 
+        // Si ID_RELACIONADO tiene valor → BLANCO
+        else {
+            $fondo_existe_xml  = "style='background-color: white'";
+            $fondo_existe_xml2 = "style='background-color: white'";
+        }
     }
 ?>
 <tr <?php echo $fondo_existe_xml2; ?>>
@@ -1323,7 +1333,7 @@ echo implode(' ', $atributosVentas);
 
 </td>
 
-<?php if ($database->variablespermisos('', 'rechazo_pago', 'ver') == 'si') { ?>
+<?php if ($database->variablespermisos('', 'rechazo_pagoviatico', 'ver') == 'si') { ?>
 
 <td style="text-align:center; background:
 
@@ -1341,8 +1351,8 @@ echo implode(' ', $atributosVentas);
         $mostrarVerRechazo = ($statusRechazado == 'si' && $motivoRechazo != '');
 
       
-        $permisoguardarRechazo = $database->variablespermisos('', 'rechazo_pago', 'guardar') == 'si';
-        $permisomodificarRechazo = $database->variablespermisos('', 'rechazo_pago', 'modificar') == 'si';
+        $permisoguardarRechazo = $database->variablespermisos('', 'rechazo_pagoviatico', 'guardar') == 'si';
+        $permisomodificarRechazo = $database->variablespermisos('', 'rechazo_pagoviatico', 'modificar') == 'si';
 
     ?>
 
@@ -1362,17 +1372,18 @@ echo implode(' ', $atributosVentas);
 
         value="<?php echo $row["02SUBETUFACTURAid"]; ?>"
 
-        <?php
+     <?php
 
-  if ($statusVentasAutorizado) {
+        if ($statusVentasAutorizado) {
             echo 'disabled style="cursor:not-allowed;" title="No se puede rechazar: autorizado por ventas"';
         } elseif ($statusRechazado == 'si') {
-            if($permisomodificarRechazo){
+            if ($permisomodificarRechazo) {
                 echo 'checked onclick="STATUS_RECHAZADO('.$row["02SUBETUFACTURAid"].')" title="Pago rechazado"';
             } else {
                 echo 'checked disabled style="cursor:not-allowed;" title="Pago rechazado"';
             }
-            if($permisoguardarRechazo || $permisomodificarRechazo){
+        } else {
+            if ($permisoguardarRechazo || $permisomodificarRechazo) {
                 echo 'onclick="STATUS_RECHAZADO('.$row["02SUBETUFACTURAid"].')"';
             } else {
                 echo 'disabled style="cursor:not-allowed;" title="Sin permiso para modificar"';

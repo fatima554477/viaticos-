@@ -856,8 +856,8 @@ $('#dataModal').modal('toggle');
 
 
 	$('#target1').show("linear");
-			$('#target2').hide("linear");
-			$('#target3').hide("linear");
+			$('#target2').show("linear");
+			$('#target3').show("linear");
 			$('#target4').hide("linear");
 			$('#target5').hide("linear");
 			$('#target6').hide("linear");

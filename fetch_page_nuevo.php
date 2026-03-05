@@ -3,7 +3,7 @@
 <div id="content">     
 			<hr/>
 		<strong>	  <p class="mb-0 text-uppercase" ><img src="includes/contraer31.png" id="mostrar3" style="cursor:pointer;"/>
-<img src="includes/contraer41.png" id="ocultar3" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp; FILTRO VIATICOS</p></strong></div>
+<img src="includes/contraer41.png" id="ocultar3" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp; FILTRO VIÁTICOS</p></strong></div>
 
 
 <div  id="mensajefiltro">
@@ -123,5 +123,5 @@ if (!empty($_GET['NUMERO_CONSECUTIVO_PROVEE'])) {
 } else {
     $_SESSION['NUMERO_CONSECUTIVO_PROVEE'] = '';
 }
-require "clases/script.filtro.php";
+require "ventasoperaciones2/clases/script.filtro.php";
 ?>

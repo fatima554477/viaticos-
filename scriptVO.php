@@ -375,12 +375,21 @@ function comasainput2(name){
 
 $(document).ready(function(){
 
+let guardandoPagoProveedor = false;
+
 
 
 
 
 	
 $("#enviarPAGOPROVEEDORES").click(function(){
+	if (guardandoPagoProveedor) {
+		return;
+	}
+
+	guardandoPagoProveedor = true;
+	$("#enviarPAGOPROVEEDORES").prop('disabled', true);
+
 	/*nuevo script pbajar archivos y datos*/
 const formData = new FormData($('#pagoaproveedoresform')[0]);
 
@@ -394,69 +403,38 @@ $.ajax({
     processData: false
 }).done(function(data) {
 		if($.trim(data)=='Ingresado' || $.trim(data)=='Actualizado'){
-		
 
-			$("#RAZON_SOCIAL").val(''); //borra valores vienen de PHP
-			$("#CONCEPTO_PROVEE").val(''); //borra valores vienen de PHP
-			$("#RFC_PROVEEDOR").val(''); //borra valores vienen de PHP
-			$("#TIPO_DE_MONEDA").val(''); //borra valores vienen de PHP
-			$("#FECHA_DE_PAGO").val(''); //borra valores vienen de PHP
-			$("#NUMERO_CONSECUTIVO_PROVEE").val(''); //borra valores vienen de PHP
-			$("#ADJUNTAR_FACTURA_XML").val(''); //borra valores vienen de PHP
-			$("#2MONTO_FACTURA").val(''); //borra valores vienen de PHP
-			$("#2MONTO_DEPOSITAR").val(''); //borra valores vienen de PHP
-			$("#PFORMADE_PAGO").val(''); //borra valores vienen de PHP
-			$("#2ADJUNTAR_FACTURA_PDF").val(''); //borra valores vienen de PHP
-			$("#2TImpuestosRetenidos").val(''); //borra valores vienen de PHP
-			
-			/*reset multi imagen*/
-			$("#CONCEPTO_PROVEE2").load(location.href + " #CONCEPTO_PROVEE2");
-			$("#2ADJUNTAR_FACTURA_XML").load(location.href + " #2ADJUNTAR_FACTURA_XML");
-			$("#ADJUNTAR_FACTURA_XML").load(location.href + " #ADJUNTAR_FACTURA_XML");
-			$("#1ADJUNTAR_FACTURA_XML").load(location.href + " #1ADJUNTAR_FACTURA_XML");
-			$("#ADJUNTAR_FACTURA_PDF").load(location.href + " #ADJUNTAR_FACTURA_PDF");
-			$("#1ADJUNTAR_FACTURA_PDF").load(location.href + " #1ADJUNTAR_FACTURA_PDF");
-			$("#IMPUESTO_HOSPEDAJE").load(location.href + " #IMPUESTO_HOSPEDAJE");
-			$("#MONTO_PROPINA").load(location.href + " #MONTO_PROPINA");
-			$("#IVA").load(location.href + " #IVA");
-			
-			$("#2ADJUNTAR_FACTURA_PDF").load(location.href + " #2ADJUNTAR_FACTURA_PDF");
-			$("#2ADJUNTAR_COTIZACION").load(location.href + " #2ADJUNTAR_COTIZACION");
-			$("#2CONPROBANTE_TRANSFERENCIA").load(location.href + " #2CONPROBANTE_TRANSFERENCIA");
-			$("#2ADJUNTAR_ARCHIVO_1").load(location.href + " #2ADJUNTAR_ARCHIVO_1");
-			$('#NUMERO_CONSECUTIVO_PROVEE2').load(location.href + ' #NUMERO_CONSECUTIVO_PROVEE2');
-			$('#2MONTO_FACTURA').load(location.href + ' #2MONTO_FACTURA');
-			$('#2MONTO_DEPOSITAR').load(location.href + ' #2MONTO_DEPOSITAR');
-			$('#2IVA').load(location.href + ' #2IVA');
-			$('#2TImpuestosRetenidosIVA').load(location.href + ' #2TImpuestosRetenidosIVA');
-			$('#TImpuestosRetenidosIVA').load(location.href + ' #TImpuestosRetenidosIVA');
-			$('#2TImpuestosRetenidosISR').load(location.href + ' #2TImpuestosRetenidosISR');
-			$('#TImpuestosRetenidosISR').load(location.href + ' #TImpuestosRetenidosISR');
-			$('#2descuentos').load(location.href + ' #2descuentos');
-			$('#descuentos').load(location.href + ' #descuentos');
-			$('#TImpuestosRetenidos').load(location.href + ' #TImpuestosRetenidos');
-			$('#2TImpuestosRetenidos').load(location.href + ' #2TImpuestosRetenidos');
+			$('#pagoaproveedoresform')[0].reset();
+			$('#NOMBRE_COMERCIAL').val(null).trigger('change');
+			$('#RAZON_SOCIAL, #CONCEPTO_PROVEE, #RFC_PROVEEDOR, #TIPO_DE_MONEDA, #FECHA_DE_PAGO, #NUMERO_CONSECUTIVO_PROVEE').val('');
+			$('#2MONTO_FACTURA, #2MONTO_DEPOSITAR, #2TImpuestosRetenidos, #2TImpuestosRetenidosIVA, #2TImpuestosRetenidosISR, #2descuentos, #2IVA, #IMPUESTO_HOSPEDAJE, #MONTO_PROPINA, #IVA').val('');
+			$('#CONCEPTO_PROVEE2, #2ADJUNTAR_FACTURA_XML, #1ADJUNTAR_FACTURA_XML, #1ADJUNTAR_FACTURA_PDF, #2ADJUNTAR_FACTURA_PDF, #2ADJUNTAR_COTIZACION, #2CONPROBANTE_TRANSFERENCIA, #2ADJUNTAR_ARCHIVO_1, #NUMERO_CONSECUTIVO_PROVEE2').empty();
+			$('#TImpuestosRetenidosIVA, #TImpuestosRetenidosISR, #descuentos, #TImpuestosRetenidos').text('0');
 
-			$('#NOMBRE_COMERCIAL').empty().trigger("change");
+			if (typeof resetmontoapagar === 'function') {
+				resetmontoapagar();
+			}
 
 			$("#mensajepagoproveedores").html("<span id='ACTUALIZADO' >"+data+"</span>").delay(2000).fadeOut();
             $('#resettabla').load(location.href + ' #resettabla');	
 
             
 			$.getScript(load(1));
-			location.reload();
 		
 
 			
 			}else{
 			$("#mensajepagoproveedores").html(data).delay(3000).fadeOut();
 		}
+		guardandoPagoProveedor = false;
+		$("#enviarPAGOPROVEEDORES").prop('disabled', false);
 })
 .fail(function() {
     console.log("detect error");
+	guardandoPagoProveedor = false;
+	$("#enviarPAGOPROVEEDORES").prop('disabled', false);
 });
 });
-
 
 
 

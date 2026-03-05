@@ -842,7 +842,7 @@ if($row['ultimo_id']==0 or $row['ultimo_id']==''){
 			$conn,
 			$ultimo_id,
 			'INGRESO',
-			'Se ingresó un nuevo registro de PP CON DOS O MAS FACTURAS.',
+			'Se ingresó un nuevo registro de VIÁTICOS.',
 			$usuarioBitacora,
 			''
 		);

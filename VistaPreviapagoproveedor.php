@@ -1,12 +1,5 @@
 
 
-<?php
-/*
-fecha sandor: 
-fecha fatis : 04/04/2024
-*/
-?>
-
 
 
 <?php
@@ -1034,28 +1027,37 @@ $("#clickPAGOP").click(function(){
     data:$('#ListadoPAGOPROVEEform').serialize(),
 
     success:function(data){
-	
-		if($.trim(data)=='Ingresado' || $.trim(data)=='Actualizado'){
-				
-
-			
-			$.getScript(load(1));			
-			$("#respuestaser").html("<span id='ACTUALIZADO' >"+data+"</span>");
-			 $('#respuestaser2').html("<span id='ACTUALIZADO' >"+data+"</span>");
-                     setTimeout(function() {
-                    $("#respuestaser2").fadeOut(300, function() {
-                        $(this).html('').show();
-                    });
-                    $("#respuestaser3").fadeOut(300, function() {
-                        $(this).html('').show();
-                    });
-                }, 2000);
+		var respuesta = $.trim(data);
+		if(respuesta=='Ingresado' || respuesta=='Actualizado'){
+			if(typeof load === 'function'){
+				load(1);
 			}
-			
-			else{
-				
+			$("#respuestaser").html("<span id='ACTUALIZADO'>"+respuesta+"</span>");
+			$('#respuestaser2').html("<span id='ACTUALIZADO'>"+respuesta+"</span>");
+			$('#mensajepagoproveedores').html("<span id='ACTUALIZADO'>"+respuesta+"</span>");
+
+			var $modalAbierto = $('.modal.show');
+			if($modalAbierto.length){
+				$modalAbierto.modal('hide');
+			}
+
+			setTimeout(function() {
+				$("#respuestaser2").fadeOut(300, function() {
+					$(this).html('').show();
+				});
+				$("#respuestaser3").fadeOut(300, function() {
+					$(this).html('').show();
+				});
+				$("#mensajepagoproveedores").fadeOut(300, function() {
+					$(this).html('').show();
+				});
+			}, 2000);
+		}
+		else{
 			$("#respuestaser").html(data);
-			
+			$('#respuestaser2').html(data);
+			$('#mensajepagoproveedores').html(data);
+			load(1);
 		}
     }  
    });

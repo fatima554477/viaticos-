@@ -1,10 +1,4 @@
 
-<?php
-/*
-fecha sandor: 
-fecha fatis : 04/04/2024
-*/
-?>
 
 <?php
     if(!isset($_SESSION)) 
@@ -999,7 +993,7 @@ $output .= '
 	        <tr>
             <td width="30%"><label>GUARDAR</label></td>  
             <td width="70%"><button class="btn btn-sm btn-outline-success px-5"  type="button" id="clickPAGOP">GUARDAR</button>
-			
+			<div id="respuestaser2" class="d-inline-block ms-2"></div>
 			<input type="hidden" value="ENVIARPAGOprovee"  name="ENVIARPAGOprovee"/>
 			<input type="hidden" value="'.$row["id"].'"  name="IPpagoprovee" id="IPpagoprovee"/>
 			</td>  
@@ -1069,7 +1063,7 @@ document.getElementById('montoDescuentos').addEventListener('input', calcularTot
 	        form_data.append("IPpagoprovee",  $("#IPpagoprovee").val());
 	        $.ajax({
 	            type: 'POST',
-                url:"ventasoperaciones3/controladorPP.php",
+                url:"ventasoperaciones2/controladorPP.php",
 				  dataType: "html",
 	            contentType: false,
 	            processData: false,
@@ -1098,7 +1092,7 @@ if(numeroSolicitud.length){
 }
 else{
 	
-var result = response.split('^^');
+var result = response.split('^');
 		$('#'+nombre).val(result[1]);
 		$('#3'+nombre).html('<a target="_blank" href="includes/archivos/'+$.trim(result[0])+'">Visualizar!</a>');
 		var formaPago = $.trim(result[2] || '');
@@ -1124,36 +1118,55 @@ var result = response.split('^^');
 
 $(document).off('click','#clickPAGOP').on('click','#clickPAGOP', function(){
 
-    // ── DIAGNÓSTICO — quitar después ──
-    console.log('IPpagoprovee:', $('#IPpagoprovee').val());
-    console.log('ENVIARPAGOprovee:', $('[name="ENVIARPAGOprovee"]').val());
-    console.log('serialize:', $('#ListadoPAGOPROVEEform').serialize().substring(0, 200));
-    // ─────────────────────────────────
-
     $.ajax({
-        url: "ventasoperaciones3/controladorPP.php",
+        url: "ventasoperaciones2/controladorPP.php",
         method: "POST",
         data: $('#ListadoPAGOPROVEEform').serialize(),
         beforeSend: function(){
             $('#mensajepagoproveedores').html('<span style="color:orange;">Enviando...</span>');
+            $('#respuestaser2').html('<span style="color:orange;">Enviando...</span>');
         },
         success: function(data){
-            console.log('Respuesta controlador:', data);  // ← VER AQUÍ
             var r = $.trim(data);
             if(r === 'Ingresado' || r === 'Actualizado'){
-                if(typeof load === 'function') $.getScript(load(1));
+                if(typeof load === 'function') load(1);
                 $("#mensajepagoproveedores")
                     .html("<span style='color:green;font-weight:bold;'>" + r + "</span>")
                     .delay(3000).fadeOut(400, function(){ $(this).show().html(''); });
+                $("#respuestaser2")
+                    .html("<span style='color:green;font-weight:bold;'>" + r + "</span>")
+                    .delay(3000).fadeOut(400, function(){ $(this).show().html(''); });
+
+             var $modalAbierto = $('.modal.show');
+if($modalAbierto.length){
+    $modalAbierto.one('hidden.bs.modal', function(){
+        // Recarga la tabla del listado principal
+        if(typeof load === 'function'){
+            load(1);
+        } else {
+            // Fallback: recarga el elemento que disparó la búsqueda
+            var idActual = $("#IPpagoprovee").val();
+            if(idActual){
+                $("#actualizatabla").load(location.pathname + "?personal_id=" + idActual);
+            }
+        }
+    });
+    $modalAbierto.modal('hide');
+}
             } else {
                 $("#mensajepagoproveedores").html(
+                    "<span style='color:red;'>" + (data || 'Sin respuesta del servidor') + "</span>"
+                );
+                $("#respuestaser2").html(
                     "<span style='color:red;'>" + (data || 'Sin respuesta del servidor') + "</span>"
                 );
             }
         },
         error: function(xhr){
-            console.log('Error HTTP:', xhr.status, xhr.responseText);
             $("#mensajepagoproveedores").html(
+                "<span style='color:red;'>Error " + xhr.status + "</span>"
+            );
+            $("#respuestaser2").html(
                 "<span style='color:red;'>Error " + xhr.status + "</span>"
             );
         }

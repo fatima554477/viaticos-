@@ -987,16 +987,14 @@ $output .= '
 <td width="30%" ><label>FECHA DE ÚLTIMA CARGA:</label></td>
 <td width="70%"><input type="text" readonly=»readonly» style="background:#decaf1" name="FECHA_DE_LLENADO" value="'.$row["FECHA_DE_LLENADO"].'"></td>
 </tr>
-</table>
-
 
 	        <tr>
-            <td width="30%"><label>GUARDAR</label></td>  
+            <td width="30%"><label>GUARDAR</label></td>
             <td width="70%"><button class="btn btn-sm btn-outline-success px-5"  type="button" id="clickPAGOP">GUARDAR</button>
 			<div id="respuestaser2" class="d-inline-block ms-2"></div>
 			<input type="hidden" value="ENVIARPAGOprovee"  name="ENVIARPAGOprovee"/>
 			<input type="hidden" value="'.$row["id"].'"  name="IPpagoprovee" id="IPpagoprovee"/>
-			</td>  
+			</td>
         </tr>
 
      ';

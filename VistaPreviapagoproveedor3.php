@@ -34,7 +34,7 @@ elseif($row['STATUS_DE_PAGO']=="PAGADO"){$PAGADO = "selected";}
 elseif($row['STATUS_DE_PAGO']=="RECHAZADO"){$RECHAZADO = "selected";}
 
 $STATUS_DE_PAGO = '<select required="" name="STATUS_DE_PAGO" disabled > 
-<option selected="">SELECCIONA UNA OPCION</option>
+
 <option style="background:#d9f9fa" value="SOLICITADO" '.$SOLICITADO.'>SOLICITADO</option>
 <option style="background:#e1f5de" value="APROBADO" '.$APROBADO.'>APROBADO</option>
 <option style="background:#f5deee" value="PAGADO" '.$PAGADO.'>PAGADO</option>
@@ -48,7 +48,7 @@ $STATUS_DE_PAGO = '<select required="" name="STATUS_DE_PAGO" disabled >
 
 
 
-        if($rowDOCTOS["ADJUNTAR_FACTURA_PDF"]!=""){$ADJUNTAR_FACTURA_PDF .=  "<a target='_blank' href='includes/archivos/".$rowDOCTOS["ADJUNTAR_FACTURA_PDF"]."'>Visualizar!</a>"." <span id='".$rowDOCTOS['id']."' class='view_dataSBborrar2' style='cursor:pointer;color:blue;'>Borrar!</span> <span > ".$rowDOCTOS['fechaingreso']."</span>".'<br/>'; 
+        if($rowDOCTOS["ADJUNTAR_FACTURA_PDF"]!=""){$ADJUNTAR_FACTURA_PDF .=  "<a target='_blank' href='includes/archivos/".$rowDOCTOS["ADJUNTAR_FACTURA_PDF"]."'>Visualizar!</a>"."  <span > ".$rowDOCTOS['fechaingreso']."</span>".'<br/>'; 
 		}	else{
 			
 			//$ADJUNTAR_FACTURA_PDF = "";
@@ -56,7 +56,7 @@ $STATUS_DE_PAGO = '<select required="" name="STATUS_DE_PAGO" disabled >
 		}
         
         
-        if($rowDOCTOS["ADJUNTAR_FACTURA_XML"]!=""){$ADJUNTAR_FACTURA_XML .=  "<a target='_blank' href='includes/archivos/".$rowDOCTOS["ADJUNTAR_FACTURA_XML"]."'>Visualizar!</a>"." <span id='".$rowDOCTOS['id']."' class='view_dataSBborrar2' style='cursor:pointer;color:blue;'>Borrar!</span> <span > ".$rowDOCTOS['fechaingreso']."</span>".'<br/>'; 
+        if($rowDOCTOS["ADJUNTAR_FACTURA_XML"]!=""){$ADJUNTAR_FACTURA_XML .=  "<a target='_blank' href='includes/archivos/".$rowDOCTOS["ADJUNTAR_FACTURA_XML"]."'>Visualizar!</a>"."  <span > ".$rowDOCTOS['fechaingreso']."</span>".'<br/>'; 
 		}	else{
 			
 			//$ADJUNTAR_FACTURA_XML = "";
@@ -354,38 +354,46 @@ $campos_xml = '
 
 '; 
 
-	}else{
-	$campos_xml = '';
-	}
+}else{
+    $campos_xml = '';
+}
 
- 
-     $output .= '
+// Bloquear si ID_RELACIONADO está vacío
+$disableFactura = (empty($row["ID_RELACIONADO"]) || trim($row["ID_RELACIONADO"]) == "");
 
+$facturaInputAttributes = $disableFactura ? ' disabled="disabled"' : '';
+$facturaDropZoneAttributes = $disableFactura
+    ? ' style="width:300px;pointer-events:none;opacity:0.6;"'
+    : ' style="width:300px;"';
 
+$output .= '
+
+<input type="hidden" name="STATUS_DE_PAGO" value="'.$row["STATUS_DE_PAGO"].'"/>
+<input type="hidden" name="PFORMADE_PAGO" value="'.$row["PFORMADE_PAGO"].'"/>
 
 
 
  <tr>
  
-<td width="30%"  style="background:#39FF14"><label>ADJUNTAR FACTURA (FORMATO XML)</label></td>
-<td width="70%">	<div id="drop_file_zone" ondrop="upload_file2(event,\'ADJUNTAR_FACTURA_XML\')" ondragover="return false" style="width:300px;">
+<td width="30%" style="font-weight:bold;" ><label>ADJUNTAR FACTURA (FORMATO XML)</label></td>
+<td width="70%">	<div id="drop_file_zone" ondrop="upload_file2(event,\'ADJUNTAR_FACTURA_XML\')" ondragover="return false"'.$facturaDropZoneAttributes.'>
 <p>Suelta aquí o busca tu archivo</p>
-<p><input class="form-control form-control-sm" id="ADJUNTAR_FACTURA_XML" type="text" onkeydown="return false" onclick="file_explorer2(\'ADJUNTAR_FACTURA_XML\');" style="width:250px;" VALUE="'.$row["ADJUNTAR_FACTURA_XML"] .' " required /></p>
-<input type="file" name="ADJUNTAR_FACTURA_XML" id="nono"/>
+<p><input class="form-control form-control-sm" id="ADJUNTAR_FACTURA_XML" type="text" onkeydown="return false" onclick="file_explorer2(\'ADJUNTAR_FACTURA_XML\');" style="width:250px;" VALUE="'.$row["ADJUNTAR_FACTURA_XML"] .' " required'.$facturaInputAttributes.' /></p>
+<input type="file" name="ADJUNTAR_FACTURA_XML" id="nono"'.$facturaInputAttributes.'/>
 <div id="3ADJUNTAR_FACTURA_XML">
 '.$ADJUNTAR_FACTURA_XML.'
 </tr> 
 <tr>
  
  
-<td width="30%" style="background:#39FF14"><label>ADJUNTAR FACTURA (FORMATO PDF)</label></td>
-<td width="70%">	<div id="drop_file_zone" ondrop="upload_file2(event,\'ADJUNTAR_FACTURA_PDF\')" ondragover="return false" style="width:300px;">
+<td width="30%" style="font-weight:bold;" ><label>ADJUNTAR FACTURA (FORMATO PDF)</label></td>
+<td width="70%">	<div id="drop_file_zone" ondrop="upload_file2(event,\'ADJUNTAR_FACTURA_PDF\')" ondragover="return false"'.$facturaDropZoneAttributes.'>
 <p>Suelta aquí o busca tu archivo</p>
-<p><input class="form-control form-control-sm" id="ADJUNTAR_FACTURA_PDF" type="text" onkeydown="return false" onclick="file_explorer2(\'ADJUNTAR_FACTURA_PDF\');" style="width:250px;" VALUE="'.$row["ADJUNTAR_FACTURA_PDF"] .' " required /></p>
-<input type="file" name="ADJUNTAR_FACTURA_PDF" id="nono"/>
+<p><input class="form-control form-control-sm" id="ADJUNTAR_FACTURA_PDF" type="text" onkeydown="return false" onclick="file_explorer2(\'ADJUNTAR_FACTURA_PDF\');" style="width:250px;" VALUE="'.$row["ADJUNTAR_FACTURA_PDF"] .' " required'.$facturaInputAttributes.' /></p>
+<input type="file" name="ADJUNTAR_FACTURA_PDF" id="nono"'.$facturaInputAttributes.'/>
 <div id="3ADJUNTAR_FACTURA_PDF">
 '.$ADJUNTAR_FACTURA_PDF.'
-</tr> 
+</tr>
 
 <tr>
 
@@ -395,7 +403,7 @@ $campos_xml = '
 
  
 
-<td width="30%" style="background:#dfd9f3"><label>NÚMERO CONSECUTIVO DE PAGO A PROVEEDORES</label></td>
+<td width="30%" style="background:#dfd9f3"><label>NÚMERO DE SOLICITUD</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2" name="NUMERO_CONSECUTIVO_PROVEE" value="'.$row["NUMERO_CONSECUTIVO_PROVEE"].'"></td>
 </tr>
 
@@ -469,12 +477,12 @@ $campos_xml = '
 
 <tr >
 <td width="30%" style="background:#39FF14"><label>IMPUESTOS RETENIDOS  IVA:</label></td>
-<td width="70%"><input type="text" name="TImpuestosRetenidosIVA"  value="'.$row["TImpuestosRetenidosIVA"].'"></td>
+<td width="70%"><input type="text" name="TImpuestosRetenidosIVA"  id="montoRetenidoIVA" value="'.$row["TImpuestosRetenidosIVA"].'"></td>
 </tr> 
 
 <tr>
 <td width="30%" style="background:#39FF14"><label>IMPUESTOS RETENIDOS  ISR:</label></td>
-<td width="70%"><input type="text" name="TImpuestosRetenidosISR"  value="'.$row["TImpuestosRetenidosISR"].'"></td>
+<td width="70%"><input type="text" name="TImpuestosRetenidosISR" id="montoRetenidoISR" value="'.$row["TImpuestosRetenidosISR"].'"></td>
 </tr> 
 
 
@@ -490,7 +498,7 @@ $campos_xml = '
 
 <tr>
 <td width="30%" style="background:#39FF14"><label>DESCUENTO:</label></td>
-<td width="70%"><input type="text" name="descuentos"  value="'.$row["descuentos"].'"></td>
+<td width="70%"><input type="text" name="descuentos" id="montoDescuentos" value="'.$row["descuentos"].'"></td>
 </tr> 
 
 
@@ -610,49 +618,49 @@ $campos_xml = '
 
 
 
-<tr>
+<tr  style="display:none">
 <td width="30%" style="background:#dfd9f3"><label>ACTIVO FIJO</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2"name="ACTIVO_FIJO"  value="'.$row["ACTIVO_FIJO"].'"></td>
 </tr>
 
 
 
-<tr>
+<tr  style="display:none">
 <td width="30%" style="background:#dfd9f3"><label>GASTO FIJO</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2"   name="GASTO_FIJO"  value="'.$row["GASTO_FIJO"].'"></td>
 </tr>
 
 
 
-<tr>
+<tr  style="display:none">
 <td width="30%" style="background:#dfd9f3"><label>PAGAR CADA:</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2"   name="PAGAR_CADA"  value="'.$row["PAGAR_CADA"].'"></td>
 </tr>
 
-<tr>
+<tr  style="display:none">
 <td width="30%" style="background:#dfd9f3"><label>FECHA DE PROGRAMACIÓN DE PAGO:</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2"  name="FECHA_PPAGO"  value="'.$row["FECHA_PPAGO"].'"></td>
 </tr>
 
               
-<tr>
+<tr  style="display:none">
 <td width="30%" style="background:#dfd9f3"><label>FECHA DE TERMINACIÓN DE LA PROGRAMACIÓN:</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2"   name="FECHA_TPROGRAPAGO"  value="'.$row["FECHA_TPROGRAPAGO"].'"></td>
 </tr>
 
 
 
-<tr>
+<tr  style="display:none">
 <td width="30%" style="background:#dfd9f3"><label>NÚMERO DE EVENTO (FIJO) PARA PROGRAMACIÓN:</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2"  name="NUMERO_EVENTOFIJO"  value="'.$row["NUMERO_EVENTOFIJO"].'"></td>
 </tr>
 
-<tr>
+<tr  style="display:none">
 <td width="30%" style="background:#dfd9f3"><label>CLASIFICACIÓN GENERAL:</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2"   name="CLASI_GENERAL"  value="'.$row["CLASI_GENERAL"].'"></td>
 </tr>
 
-<tr>
+<tr  style="display:none">
 <td width="30%" style="background:#dfd9f3"><label> SUB CLASIFICACIÓN GENERAL:</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2"  name="SUB_GENERAL"  value="'.$row["SUB_GENERAL"].'"></td>
 </tr>
@@ -663,7 +671,7 @@ $campos_xml = '
 
 
 
-<tr>
+<tr  style="display:none">
 
 <td width="30%" style="background:#dfd9f3"><label>INSTITUCIÓN BANCARIA</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2" name="BANCO_ORIGEN" value="'.$row["BANCO_ORIGEN"].'"></td>
@@ -673,15 +681,15 @@ $campos_xml = '
 
 
 
-<tr>
+<tr  style="display:none">
 
 <td width="30%" style="background:#dfd9f3"><label>PLACAS DEL VEHICULO</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2" name="PLACAS_VEHICULO" value="'.$row["PLACAS_VEHICULO"].'"></td>
 </tr>
-<tr>
+<tr  style="display:none">
 
 
-<tr>
+<tr  style="display:none">
   <td width="30%" style="background:#dfd9f3"><label>COMPROBANTE DE TRANSFERENCIA AL PROVEEDOR</label></td>
   <td width="70%">
     <div id="drop_file_zone" style="width:300px; background-color:#d7bde2;"> <!-- Fondo gris -->
@@ -710,7 +718,7 @@ $campos_xml = '
 
 
 
-<tr>
+<tr  style="display:none">
   <td width="30%" style="background:#dfd9f3"><label>COMPLEMENTOS DE PAGO  (FORMATO XML)</label></td>
   <td width="70%">
     <div id="drop_file_zone" style="width:300px; background-color:#d7bde2;"> <!-- Fondo gris -->
@@ -736,7 +744,7 @@ $campos_xml = '
   </td>
 </tr>
 
-<tr>
+<tr  style="display:none">
   <td width="30%" style="background:#dfd9f3"><label>ADJUNTAR CANCELACIONES (FORMATO PDF)</label></td>
   <td width="70%">
     <div id="drop_file_zone" style="width:300px; background-color:#d7bde2;"> <!-- Fondo gris -->
@@ -764,7 +772,7 @@ $campos_xml = '
 
 
 
-<tr>
+<tr  style="display:none">
   <td width="30%" style="background:#dfd9f3"><label>ADJUNTAR CANCELACIONES (FORMATO XML)</label></td>
   <td width="70%">
     <div id="drop_file_zone" style="width:300px; background-color:#d7bde2;"> <!-- Fondo gris -->
@@ -790,7 +798,7 @@ $campos_xml = '
   </td>
 </tr> 
 
-<tr>
+<tr  style="display:none">
 
 <td width="30%" style="background:#dfd9f3"><label>ADJUNTAR FACTURA DE COMISIÓN (FORMATO PDF)</label></td>
 
@@ -820,7 +828,7 @@ $campos_xml = '
 
 
 
-<tr>
+<tr  style="display:none">
 
 <td width="30%" style="background:#dfd9f3"><label>ADJUNTAR FACTURA DE COMISIÓN (FORMATO XML)</label></td>
   <td width="70%">
@@ -847,7 +855,7 @@ $campos_xml = '
   </td>
 </tr>
 
-<tr>
+<tr  style="display:none">
 
 <td width="30%" style="background:#dfd9f3"><label> ADJUNTAR CALCULO DE COMISIÓN</label></td>
   <td width="70%">
@@ -875,7 +883,7 @@ $campos_xml = '
 </tr>
 
 
-<tr>
+<tr  style="display:none">
 
 <td width="30%" style="background:#dfd9f3"><label>MONTO DE COMISIÓN</label></td>
 <td width="70%"><input type="text" readonly=»readonly»  style="background:#d7bde2" name="MONTO_DE_COMISION" value="'.$row["MONTO_DE_COMISION"].'"></td>
@@ -883,25 +891,36 @@ $campos_xml = '
 
 
 
-<tr>
-
-<td width="30%" width="30%" style="background:#39FF14"><label>ADJUNTAR COMPROBANTE DE DEVOLUCIÓN DE DINERO Al CORPORATIVO: (CUAQUIER FORMATO)</label></td>
-
-
-
-
-<td width="70%">	<div id="drop_file_zone" ondrop="upload_file2(event,\'COMPROBANTE_DE_DEVOLUCION\')" ondragover="return false" style="width:300px;">
-<p>Suelta aquí o busca tu archivo</p>
-<p><input class="form-control form-control-sm" id="COMPROBANTE_DE_DEVOLUCION" type="text" onkeydown="return false" onclick="file_explorer2(\'COMPROBANTE_DE_DEVOLUCION\');" style="width:250px;" VALUE="'.$row["COMPROBANTE_DE_DEVOLUCION"] .' " required /></p>
-<input type="file" name="COMPROBANTE_DE_DEVOLUCION" id="nono"/>
-<div id="3COMPROBANTE_DE_DEVOLUCION">
-'.$COMPROBANTE_DE_DEVOLUCION.'
+<tr  style="display:none">
+<td width="30%" style="background:#dfd9f3"><label> ADJUNTAR COMPROBANTE DE DEVOLUCIÓN DE DINERO Al CORPORATIVO</label></td>
+  <td width="70%">
+    <div id="drop_file_zone" style="width:300px; background-color:#d7bde2;"> <!-- Fondo gris -->
+      <p style="color:#999;">Suelta aquí o busca tu archivo</p> <!-- Texto deshabilitado -->
+      <p>
+        <!-- Input con readonly y sin eventos -->
+        <input 
+          class="form-control form-control-sm" 
+          id="COMPROBANTE_DE_DEVOLUCION" 
+          type="text" 
+          readonly 
+          style="width:250px; background-color:#e9ecef;" 
+          value="'.$row["COMPROBANTE_DE_DEVOLUCION"] .'" 
+          required 
+        />
+      </p>
+      <!-- Archivo oculto y deshabilitado -->
+      <input type="file" name="COMPROBANTE_DE_DEVOLUCION" id="nono" style="display:none;" disabled />
+    </div>
+    <div id="3COMPROBANTE_DE_DEVOLUCION">
+      '.$COMPROBANTE_DE_DEVOLUCION.'
+    </div>
+  </td>
 </tr>
 
 
 
 
-<tr>
+<tr  style="display:none">
 
 <td width="30%" style="background:#dfd9f3"><label> ADJUNTAR NOTA DE CREDITO DE COMPRA</label></td>
  <td width="70%">
@@ -1012,16 +1031,19 @@ $campos_xml = '
 	}
 	
 	
-	// Función para calcular el total automáticamente
+// Función para calcular el total automáticamente
 function calcularTotal() {
     // Obtener valores
     const montoEvento = parseFloat(document.getElementById('montoTotalEvento').value) || 0;
     const montoAvion = parseFloat(document.getElementById('montoTotalAvion').value) || 0;
     const montopropina = parseFloat(document.getElementById('montoTotalpropina').value) || 0;
     const montohospedaje = parseFloat(document.getElementById('montoTotalhospedaje').value) || 0;
+    const montoRetenidoIVA = parseFloat(document.getElementById('montoRetenidoIVA').value) || 0;
+    const montoRetenidoISR = parseFloat(document.getElementById('montoRetenidoISR').value) || 0;
+    const montoDescuentos = parseFloat(document.getElementById('montoDescuentos').value) || 0;
     
     // Calcular suma
-    const total = montoEvento + montoAvion + montopropina + montohospedaje;
+    const total = montoEvento + montoAvion + montopropina + montohospedaje - montoRetenidoIVA - montoRetenidoISR - montoDescuentos;
     
     // Asignar resultado (con 2 decimales)
     document.getElementById('montoTotalEventoResultado').value = total.toFixed(2);
@@ -1035,6 +1057,9 @@ document.getElementById('montoTotalEvento').addEventListener('input', calcularTo
 document.getElementById('montoTotalAvion').addEventListener('input', calcularTotal);
 document.getElementById('montoTotalpropina').addEventListener('input', calcularTotal);
 document.getElementById('montoTotalhospedaje').addEventListener('input', calcularTotal);
+document.getElementById('montoRetenidoIVA').addEventListener('input', calcularTotal);
+document.getElementById('montoRetenidoISR').addEventListener('input', calcularTotal);
+document.getElementById('montoDescuentos').addEventListener('input', calcularTotal);
 
 
 	function ajax_file_upload2(file_obj,nombre) {
@@ -1044,37 +1069,52 @@ document.getElementById('montoTotalhospedaje').addEventListener('input', calcula
 	        form_data.append("IPpagoprovee",  $("#IPpagoprovee").val());
 	        $.ajax({
 	            type: 'POST',
-                url:"pagoproveedores/controladorPP.php",
+                url:"ventasoperaciones3/controladorPP.php",
 				  dataType: "html",
 	            contentType: false,
 	            processData: false,
 	            data: form_data,
  beforeSend: function() {
-$('#3'+nombre).html('<p style="color:green;">Cargando archivo!</p>');
-$('#respuestaser').html('<p style="color:green;">Actualizado!</p>');
-    },				
-	            success:function(response) {
+                    $('#3' + nombre).html('<p style="color:green;">Cargando archivo!</p>');
+                    $('#respuestaser').html('<p style="color:green;">Actualizado!</p>');
+                },
+            success:function(response) {
+var responseTrim = $.trim(response);
+var responseParts = responseTrim.split('^^');
 
-if($.trim(response) == 2 ){
+if(responseTrim == 2 ){
 
 $('#3'+nombre).html('<p style="color:red;">Error, archivo diferente a PDF, JPG o GIF.</p>');
 $('#'+nombre).val("");
 }
-else if($.trim(response) == 3 ){
-$('#3'+nombre).html('<p style="color:red;">UUID PREVIAMENTE CARGADO.</p>');
-//$('#'+nombre).val("");
+else if(responseParts[0] === '3' ){
+var numeroSolicitud = $.trim(responseParts[1] || '');
+if(numeroSolicitud.length){
+	$('#3'+nombre).html('<p style="color:red;font-weight:600;">⚠️ UUID YA REGISTRADO — Se encuentra en la solicitud número: <strong>'+numeroSolicitud+'</strong></p>');
+}else{
+	$('#3'+nombre).html('<p style="color:red;">UUID PREVIAMENTE CARGADO.</p>');
+}
+
 }
 else{
-		var result = response.split('^^');
+	
+var result = response.split('^^');
 		$('#'+nombre).val(result[1]);
 		$('#3'+nombre).html('<a target="_blank" href="includes/archivos/'+$.trim(result[0])+'">Visualizar!</a>');
+		var formaPago = $.trim(result[2] || '');
+		if(formaPago.length){
+			bloquearFormaPagoDesdeXml(formaPago);
+
+		}
 
 		if(result[1].length>1){
 			$('#respuestaser').html('<p style="color:green;font-size:25px;font-weight: bolder;">XML CORRECTAMENTE CARGADO CON EL UUID:<br> '+result[1]+'</p>');
 			$('#reseteaxml').remove(); 
-		}	
+		}
+		
+
 }
-$('#respuestaser').html('<p style="color:green;">'+response+'</p>');
+
 	            }
 	        });
 	    }
@@ -1082,38 +1122,42 @@ $('#respuestaser').html('<p style="color:green;">'+response+'</p>');
     $(document).ready(function(){
 
 
-$("#clickPAGOP").click(function(){
-	
-   $.ajax({  
-    url:"pagoproveedores/controladorPP.php",
-    method:"POST",  
-    data:$('#ListadoPAGOPROVEEform').serialize(),
+$(document).off('click','#clickPAGOP').on('click','#clickPAGOP', function(){
 
-    beforeSend:function(){  
-    $('#mensajepagoproveedores').html('cargando'); 
-    }, 	
-	
-    success:function(data){
-	
-		if($.trim(data)=='Ingresado' || $.trim(data)=='Actualizado'){
-				
-			$('#dataModal').modal('hide');
-			//$("#results").load("pagoproveedores/fetch_pagesPP.php");
-			
-			
-			$.getScript(load(1));
-			$("#mensajepagoproveedores").html("<span id='ACTUALIZADO' >"+data+"</span>");
+    // ── DIAGNÓSTICO — quitar después ──
+    console.log('IPpagoprovee:', $('#IPpagoprovee').val());
+    console.log('ENVIARPAGOprovee:', $('[name="ENVIARPAGOprovee"]').val());
+    console.log('serialize:', $('#ListadoPAGOPROVEEform').serialize().substring(0, 200));
+    // ─────────────────────────────────
 
-			}else{
-				
-			$("#mensajepagoproveedores").html(data);
-			
-		}
-    }  
-   });
-   
+    $.ajax({
+        url: "ventasoperaciones3/controladorPP.php",
+        method: "POST",
+        data: $('#ListadoPAGOPROVEEform').serialize(),
+        beforeSend: function(){
+            $('#mensajepagoproveedores').html('<span style="color:orange;">Enviando...</span>');
+        },
+        success: function(data){
+            console.log('Respuesta controlador:', data);  // ← VER AQUÍ
+            var r = $.trim(data);
+            if(r === 'Ingresado' || r === 'Actualizado'){
+                if(typeof load === 'function') $.getScript(load(1));
+                $("#mensajepagoproveedores")
+                    .html("<span style='color:green;font-weight:bold;'>" + r + "</span>")
+                    .delay(3000).fadeOut(400, function(){ $(this).show().html(''); });
+            } else {
+                $("#mensajepagoproveedores").html(
+                    "<span style='color:red;'>" + (data || 'Sin respuesta del servidor') + "</span>"
+                );
+            }
+        },
+        error: function(xhr){
+            console.log('Error HTTP:', xhr.status, xhr.responseText);
+            $("#mensajepagoproveedores").html(
+                "<span style='color:red;'>Error " + xhr.status + "</span>"
+            );
+        }
+    });
 });
-
-		});
 		
 	</script>

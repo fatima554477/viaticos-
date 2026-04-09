@@ -13,7 +13,7 @@ fecha fatis : 03/04/2024
 
 define('__ROOT1__', dirname(dirname(__FILE__)));
 include_once (__ROOT1__."/includes/error_reporting.php");
-include_once (__ROOT1__."/ventasoperaciones3/class.epcinnPP.php");
+include_once (__ROOT1__."/ventasoperaciones4/class.epcinnPP.php");
 
 $pagoproveedores= NEW accesoclase();
 $conexion = NEW colaboradores();
@@ -242,9 +242,7 @@ $Propina = isset($_POST["Propina"])?$_POST["Propina"]:"";
 $actualiza = isset($_POST["actualiza"])?$_POST["actualiza"]:"";
 $DescripcionConcepto = isset($_POST["DescripcionConcepto"])?$_POST["DescripcionConcepto"]:"";
 
-if( $NUMERO_EVENTO == "" ){
-	echo "<P style='color:red; font-size:23px;'>FAVOR DE LLENAR CAMPOS OBLIGATORIOS</p>";
-}else{		
+		
 	$esAltaNueva = ($ENVIARPAGOprovee == 'ENVIARPAGOprovee' && trim((string)$IPpagoprovee) == '');
 	if ($esAltaNueva) {
 		$huellaPago = md5(implode('|', array(
@@ -277,7 +275,7 @@ echo $pagoproveedores->PAGOPRO ($NUMERO_CONSECUTIVO_PROVEE , $ID_RELACIONADO,$NO
 		$DomicilioFiscalReceptor, $RegimenFiscalReceptor, $UUID, $TImpuestosRetenidos, 
 		$TImpuestosTrasladados, $TuaTotalCargos, $Descuento,$Propina, $TUA, $actualiza,  $DescripcionConcepto);
 }
-}
+
 elseif($borrapagoaproveedores == 'borrapagoaproveedores'){
 	$borra_id_PAGOP = isset($_POST["borra_id_PAGOP"])?$_POST["borra_id_PAGOP"]:"";   
 	echo  $pagoproveedores->borrapagoaproveedores($borra_id_PAGOP);

@@ -447,6 +447,8 @@ public function variable_SUBETUFACTURA() {
         $Propina              = isset($regreso['Propina']) ? $regreso['Propina'] : '';
 
         $this->actualizar_forma_pago($ultimo_id, $formaDePago);
+		
+		$nombreE                  = mysqli_real_escape_string($conn, $nombreE);
 
         $camposComunes = "`Version`='{$Version}',`fechaTimbrado`='{$FechaTimbrado}',`tipoDeComprobante`='{$tipoDeComprobante}',
             `metodoDePago`='{$metodoDePago}',`formaDePago`='{$formaDePago}',`condicionesDePago`='{$condicionesDePago}',
@@ -546,7 +548,17 @@ public function variable_SUBETUFACTURA() {
             $$var = str_replace(',', '', $$var);
         }
 
-        $conn = $this->db();
+            $conn = $this->db();
+
+    // ESCAPAR TEXTOS
+
+    $NOMBRE_COMERCIAL            = mysqli_real_escape_string($conn, $NOMBRE_COMERCIAL);
+    $RAZON_SOCIAL                = mysqli_real_escape_string($conn, $RAZON_SOCIAL);
+    $VIATICOSOPRO                = mysqli_real_escape_string($conn, $VIATICOSOPRO);
+    $RFC_PROVEEDOR               = mysqli_real_escape_string($conn, $RFC_PROVEEDOR);
+    $NUMERO_EVENTO               = mysqli_real_escape_string($conn, $NUMERO_EVENTO);
+    $NOMBRE_EVENTO               = mysqli_real_escape_string($conn, $NOMBRE_EVENTO);
+	$OBSERVACIONES_1             = mysqli_real_escape_string($conn, $OBSERVACIONES_1);
 
         // Obtener nombre comercial
         $queryNC   = mysqli_query($conn, "SELECT P_NOMBRE_COMERCIAL_EMPRESA FROM 02direccionproveedor1 WHERE idRelacion='{$NOMBRE_COMERCIAL}'") or die('P160' . mysqli_error($conn));
@@ -825,8 +837,8 @@ if ($doctoActual) {
         mysqli_query($conn, "DELETE FROM 02SUBETUFACTURA WHERE id='{$id}'") or die('P44' . mysqli_error($conn));
         mysqli_query($conn, "DELETE FROM 02XML WHERE ultimo_id='{$id}'") or die('P44' . mysqli_error($conn));
         mysqli_query($conn, "DELETE FROM 02SUBETUFACTURADOCTOS WHERE idTemporal='{$id}'") or die('P44' . mysqli_error($conn));
-mysqli_query($conn, "DELETE FROM `02SUBETUFACTURA_BITACORA` WHERE `id_subetufactura` = '".$id."' ") or die('P44'.mysqli_error($conn));
-		echo "ELEMENTO BORRADO";
+ mysqli_query($conn, "DELETE FROM 02SUBETUFACTURA_BITACORA WHERE id_subetufactura='{$id}'") or die('P44' . mysqli_error($conn));
+        echo "ELEMENTO BORRADO";
     }
 
     public function borrar_xmls($ruta, $id, $nombrearchivo, $tabla1, $tabla2) {
@@ -856,17 +868,32 @@ mysqli_query($conn, "DELETE FROM `02SUBETUFACTURA_BITACORA` WHERE `id_subetufact
         return $row['id'];
     }
 
-    public function VALIDA02XMLUUID($uuid) {
-        $conn  = $this->db();
-        $uuid  = mysqli_real_escape_string($conn, $uuid);
-        $query = mysqli_query($conn, "SELECT 02XML.id, 02XML.UUID, 02SUBETUFACTURA.NUMERO_CONSECUTIVO_PROVEE
-            FROM 02XML LEFT JOIN 02SUBETUFACTURA ON 02XML.ultimo_id = 02SUBETUFACTURA.id
-            WHERE 02XML.UUID='{$uuid}'");
-        $row   = mysqli_fetch_array($query, MYSQLI_ASSOC);
-        if (!$row['id']) return 'S';
+public function VALIDA02XMLUUID($uuid) {
+    $conn  = $this->db();
+    $uuid  = mysqli_real_escape_string($conn, $uuid);
+
+    // ── Verificar en 02XML ──
+    $query = mysqli_query($conn, "SELECT 02XML.id, 02XML.UUID, 02SUBETUFACTURA.NUMERO_CONSECUTIVO_PROVEE
+        FROM 02XML LEFT JOIN 02SUBETUFACTURA ON 02XML.ultimo_id = 02SUBETUFACTURA.id
+        WHERE 02XML.UUID='{$uuid}'");
+    $row = mysqli_fetch_array($query, MYSQLI_ASSOC);
+
+    if ($row['id']) {
         $numero = ($row['NUMERO_CONSECUTIVO_PROVEE'] != '') ? $row['NUMERO_CONSECUTIVO_PROVEE'] : $row['id'];
-        return 'UUID_DUPLICADO:' . $numero;
+        return '3^^' . $numero;
     }
+
+    // ── Verificar en 07XML (Comprobación de Gastos) ──
+    $query7 = mysqli_query($conn, "SELECT id, ultimo_id FROM 07XML WHERE UUID='{$uuid}'");
+    $row7   = mysqli_fetch_array($query7, MYSQLI_ASSOC);
+
+    if ($row7['id']) {
+        $numero7 = ($row7['ultimo_id'] != '') ? $row7['ultimo_id'] : $row7['id'];
+        return '7^^^' . $numero7;
+    }
+
+    return 'S';
+}
 
     public function Listado_pagoproveedor() {
         $conn = $this->db();
@@ -947,37 +974,59 @@ mysqli_query($conn, "DELETE FROM `02SUBETUFACTURA_BITACORA` WHERE `id_subetufact
     }
 
 public function borrar_historico_xml($nombretabla, $idusuario) {
-    $conn     = $this->db();
-    $ruta     = __ROOT3__;
+    $conn      = $this->db();
+    $ruta      = __ROOT3__ . '/includes/archivos/';
     $idusuario = intval($idusuario);
 
-    // 1. Borrar archivos físicos XML del servidor
-    $q = mysqli_query($conn, 
-        "SELECT ADJUNTAR_FACTURA_XML FROM {$nombretabla} 
+    // Columnas de archivos físicos que hay que borrar del servidor
+    $columnas_archivos = [
+        'ADJUNTAR_FACTURA_XML',
+        'ADJUNTAR_FACTURA_PDF',
+        'ADJUNTAR_COTIZACION',
+        'CONPROBANTE_TRANSFERENCIA',
+        'ADJUNTAR_ARCHIVO_1',
+        'FOTO_ESTADO_PROVEE11',
+        'COMPLEMENTOS_PAGO_PDF',
+        'COMPLEMENTOS_PAGO_XML',
+        'CANCELACIONES_PDF',
+        'CANCELACIONES_XML',
+        'ADJUNTAR_FACTURA_DE_COMISION_PDF',
+        'ADJUNTAR_FACTURA_DE_COMISION_XML',
+        'CALCULO_DE_COMISION',
+        'COMPROBANTE_DE_DEVOLUCION',
+        'NOTA_DE_CREDITO_COMPRA',
+    ];
+
+    // 1. Traer todos los registros temporales del usuario
+    $q = mysqli_query($conn,
+        "SELECT * FROM {$nombretabla} 
          WHERE idRelacionU='{$idusuario}' 
-         AND idTemporal='si' 
-         AND ADJUNTAR_FACTURA_XML IS NOT NULL 
-         AND ADJUNTAR_FACTURA_XML <> ''"
+         AND idTemporal='si'"
     ) or die('P44' . mysqli_error($conn));
 
+    // 2. Borrar cada archivo físico encontrado
     while ($row = mysqli_fetch_array($q, MYSQLI_ASSOC)) {
-        $archivo = $ruta . '/includes/archivos/' . $row['ADJUNTAR_FACTURA_XML'];
-        if (file_exists($archivo)) {
-            unlink($archivo);
+        foreach ($columnas_archivos as $col) {
+            if (!empty($row[$col])) {
+                $archivo = $ruta . $row[$col];
+                if (file_exists($archivo)) {
+                    unlink($archivo);
+                }
+            }
         }
     }
 
-    // 2. Borrar TODOS los registros temporales del usuario (XML, PDF, OTR y cualquier otro tipo)
-    mysqli_query($conn, 
+    // 3. Borrar TODOS los registros temporales del usuario de la tabla
+    mysqli_query($conn,
         "DELETE FROM {$nombretabla} 
          WHERE idRelacionU='{$idusuario}' 
          AND idTemporal='si'"
     ) or die('P441' . mysqli_error($conn));
 
-    // 3. Limpiar sesión del proveedor para evitar que cargue datos de sesiones anteriores
-    $_SESSION['idPROV']                    = '';
+    // 4. Limpiar sesión para evitar que cargue datos de sesiones anteriores
+    $_SESSION['idPROV']                       = '';
     $_SESSION['P_NOMBRE_COMERCIAL_EMPRESA12'] = '';
-    $_SESSION['idusuario12']               = '';
+    $_SESSION['idusuario12']                  = '';
 }
 
     public function buscarNOMBRECOMERCIAL22($rfc) {

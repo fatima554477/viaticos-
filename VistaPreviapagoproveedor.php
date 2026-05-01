@@ -180,154 +180,154 @@ $campos_xml = '
 <!--aqui empieza la lectura BD a XML-->
 <!--aqui empieza la lectura BD a XML-->
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 
-<td width="30%" style="font-weight:bold;" ><label>NOMBRE RECEPTOR</label></td>
+<td width="30%" style="font-weight:bold;display:none;" ><label>NOMBRE RECEPTOR</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="nombreR" value="'.$row2xml["nombreR"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 
 <td width="30%" style="font-weight:bold;" ><label>RFC RECEPTOR</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="rfcR" value="'.$row2xml["rfcR"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>REGÍMEN FISCAL</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="regimenE" value="'.$row2xml["regimenE"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>UUID</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="UUID" value="'.$row2xml["UUID"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>FOLIO</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="folio" value="'.$row2xml["folio"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>SERIE</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="serie" value="'.$row2xml["serie"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>CLAVE DE UNIDAD</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="ClaveUnidadConcepto" value="'.$row2xml["ClaveUnidadConcepto"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>CANTIDAD</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="CantidadConcepto" value="'.$row2xml["CantidadConcepto"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>CLAVE DE PRODUCTO O SERVICIO</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="ClaveProdServConcepto" value="'.$row2xml["ClaveProdServConcepto"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>DESCRIPCIÓN</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="DescripcionConcepto" value="'.$row2xml["DescripcionConcepto"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 
 <td width="30%" style="font-weight:bold;" ><label>MONEDA</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="Moneda" value="'.$row2xml["Moneda"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>TIPO DE CAMBIO</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="TipoCambio" value="'.$row2xml["TipoCambio"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>USO DE CFDI</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="UsoCFDI" value="'.$row2xml["UsoCFDI"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>METODO DE PAGO</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="metodoDePago" value="'.$row2xml["metodoDePago"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>CONDICIONES DE PAGO</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="condicionesDePago" value="'.$row2xml["condicionesDePago"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>TIPO DE COMPROBANTE</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="tipoDeComprobante" value="'.$row2xml["tipoDeComprobante"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>VERSIÓN</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="Version" value="'.$row2xml["Version"].'"></td>
 </tr>
 <input type="hidden" name="actualiza" value="true">
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>FECHA DE TIMBRADO</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="fechaTimbrado" value="'.$row2xml["fechaTimbrado"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>SUBTOTAL</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="subTotal" value="'.$row2xml["subTotal"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>SERVICIO, PROPINA,ISH Y SANAMIENTO</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="Propina" value="'.$row2xml["Propina"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>DESCUENTO</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="DESCUENTO" value="'.$row2xml["DESCUENTO"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>TOTAL DE IMPUESTOS TRANSLADADOS</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="TImpuestosTrasladados" value="'.$row2xml["TImpuestosTrasladados"].'"></td>
 </tr>
- <tr style="background: #fbf696;style="font-weight:bold;">
+ <tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>TOTAL DE IMPUESTOS RETENIDOS</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="TImpuestosRetenidos" value="'.$row2xml["TImpuestosRetenidos"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>TUA</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="TUA" value="'.$row2xml["TUA"].'"></td>
 </tr>
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>TOTAL</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="totalf" value="'.$row2xml["totalf"].'"></td>
@@ -335,7 +335,7 @@ $campos_xml = '
 
 
 
-<tr style="background: #fbf696;style="font-weight:bold;">
+<tr style="background: #fbf696;display:none;">
 
 <td width="30%" style="font-weight:bold;" ><label>TUA TOTAL CARGOS:</label></td>
 <td width="70%"><input type=»text» readonly=»readonly» style="background:#decaf1"  name="TuaTotalCargos" value="'.$row2xml["TuaTotalCargos"].'"></td>
@@ -432,7 +432,7 @@ $output .= '
 <tr>
 
 
-<td width="30%" style="font-weight:bold;" ><label>NOMBRE COMERCIAL</label></td>
+<td width="30%" style="font-weight:bold;" ><label>NOMBRE COMERCIAL<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></td>
 <td width="70%"><input type="text" name="NOMBRE_COMERCIAL" value="'.$row["NOMBRE_COMERCIAL"].'"></td>
 </tr> 
 <tr>
@@ -458,7 +458,7 @@ $output .= '
 </tr> 
 <tr>
  
-<td width="30%" style="font-weight:bold;" ><label>MOTIVO DEL GASTO</label></td>
+<td width="30%" style="font-weight:bold;" ><label>MOTIVO DEL GASTO<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></td>
 <td width="70%"><input type="text" name="MOTIVO_GASTO" value="'.$row["MOTIVO_GASTO"].'"></td>
 </tr> 
 <tr>
@@ -529,7 +529,7 @@ $output .= '
 
 
 <tr>
-    <td width="30%" style="font-weight:bold;" ><label>FORMA DE PAGO:</label></td>
+    <td width="30%" style="font-weight:bold;" ><label>FORMA DE PAGO:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></td>
     <td width="70%" class="form-control">
         <select id="formaDePagoSelect" name="PFORMADE_PAGO" data-lock-xml="'.(!empty(trim((string)$row2xml["formaDePago"])) ? '1' : '0').'" style="background:#daddf5">
             <option style="background:#f2b4f5" value="03" '.($row["PFORMADE_PAGO"] == "03" ? "selected" : "").'>03 TRANSFERENCIA ELECTRÓNICA</option>
@@ -603,7 +603,7 @@ $output .= '
 
 <tr   style="background: #f1a766">
 
-<td width="30%" style="font-weight:bold;" ><label>FECHA EFECTIVA DE PAGO:</label></td>
+<td width="30%" style="font-weight:bold;" ><label>FECHA EFECTIVA DE PAGO:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></td>
 <td width="70%"><input type="date" name="FECHA_A_DEPOSITAR" value="'.$row["FECHA_A_DEPOSITAR"].'"></td>
 </tr> 
 <tr>
@@ -787,7 +787,7 @@ $output .= '
 
 
 <tr>
-<td width="30%" style="font-weight:bold;" ><label> ADJUNTAR COMPROBANTE DE DEVOLUCIÓN DE DINERO A EPC</label></td>
+<td width="30%" style="font-weight:bold;" ><label> ADJUNTAR COMPROBANTE DE DEVOLUCIÓN DE DINERO </label></td>
 <td width="70%">	<div id="drop_file_zone" ondrop="upload_file2(event,\'COMPROBANTE_DE_DEVOLUCION\')" ondragover="return false" style="width:300px;">
 <p>Suelta aquí o busca tu archivo</p>
 <p><input class="form-control form-control-sm" id="COMPROBANTE_DE_DEVOLUCION" type="text" onkeydown="return false" onclick="file_explorer2(\'COMPROBANTE_DE_DEVOLUCION\');" style="width:250px;" VALUE="'.$row["COMPROBANTE_DE_DEVOLUCION"] .' " required /></p>
@@ -824,7 +824,7 @@ $output .= '
 
 <tr>
 
-<td width="30%" style="font-weight:bold;" ><label>NOMBRE DEL EJECUTIVO QUE REALIZÓ LA COMPRA</label></td>
+<td width="30%" style="font-weight:bold;" ><label>NOMBRE DEL EJECUTIVO QUE REALIZÓ LA COMPRA<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></td>
 <td width="70%"><input type="text" name="NOMBRE_DEL_EJECUTIVO" value="'.$row["NOMBRE_DEL_EJECUTIVO"].'"></td>
 </tr>
 
@@ -959,70 +959,92 @@ document.getElementById('montoDescuentos').addEventListener('input', calcularTot
 
 	
 	
-	function ajax_file_upload2(file_obj,nombre) {
-	    if(file_obj != undefined) {
-	        var form_data = new FormData();                  
-	        form_data.append(nombre, file_obj);
-	        form_data.append("IPpagoprovee",  $("#IPpagoprovee").val());
-	        $.ajax({
-	            type: 'POST',
-                url:"ventasoperaciones3/controladorPP.php",
-				  dataType: "html",
-	            contentType: false,
-	            processData: false,
-	            data: form_data,
- beforeSend: function() {
-                    $('#3' + nombre).html('<p style="color:green;">Cargando archivo!</p>');
-                    $('#respuestaser').html('<p style="color:green;">Actualizado!</p>');
-                },
-            success:function(response) {
-var responseTrim = $.trim(response);
-var responseParts = responseTrim.split('^^');
+function ajax_file_upload2(file_obj, nombre) {
+    if (!file_obj) return;
 
-if(responseTrim == 2 ){
+    var form_data = new FormData();
+    form_data.append(nombre, file_obj);
+    form_data.append("IPpagoprovee", $("#IPpagoprovee").val());
 
-$('#3'+nombre).html('<p style="color:red;">Error, archivo diferente a PDF, JPG o GIF.</p>');
-$('#'+nombre).val("");
+    $.ajax({
+        type: 'POST',
+        url: 'ventasoperaciones2/controladorPP.php',
+        dataType: 'html',
+        contentType: false,
+        processData: false,
+        data: form_data,
+        beforeSend: function () {
+            $('#3' + nombre).html('<p style="color:green;"><span class="spinner-border spinner-border-sm"></span>&nbsp;Cargando archivo...</p>');
+            $('#respuestaser').html('<p style="color:green;"><span class="spinner-border spinner-border-sm"></span>&nbsp;Cargando archivo...</p>');
+        },
+        success: function (response) {
+            var resp = $.trim(response);
+
+            if (resp === '2') {
+                $('#3' + nombre).html('<p style="color:red;">Error, archivo diferente a PDF, JPG o GIF.</p>');
+                $('#' + nombre).val('');
+
+            } else if (resp === '3') {
+                $('#3' + nombre).html('<p style="color:red;font-weight:600;">⚠️ UUID PREVIAMENTE CARGADO.</p>');
+                $('#' + nombre).val('');
+
+            } else if (resp.indexOf('3^^') === 0) {
+                var partes = resp.split('^^');
+                var numeroSolicitud = partes[1] ? $.trim(partes[1]) : '';
+                var msgDuplicado = numeroSolicitud !== ''
+                    ? '<p style="color:red;font-weight:600;">⚠️ UUID YA REGISTRADO — Se encuentra en la solicitud: <strong>' + numeroSolicitud + '</strong></p>'
+                    : '<p style="color:red;font-weight:600;">⚠️ UUID PREVIAMENTE CARGADO.</p>';
+                $('#3' + nombre).html(msgDuplicado);
+                $('#' + nombre).val('');
+
+            } else if (resp.indexOf('5^^') === 0) {
+                $('#3' + nombre).html('<p style="color:red;font-weight:600;">⚠️ EL ARCHIVO XML ESTÁ VACÍO O NO CONTIENE INFORMACIÓN VÁLIDA. Verifica que sea un CFDI timbrado correctamente e inténtalo de nuevo.</p>');
+                $('#' + nombre).val('');
+
+} else if (resp.indexOf('6^^') === 0) {
+    var partesReceptor = resp.split('^^');
+    var receptorXML = partesReceptor[1] ? $.trim(partesReceptor[1]) : '';
+    var msgReceptor = receptorXML !== ''
+        ? '⚠️ EL RECEPTOR DE LA FACTURA NO ES VÁLIDO: <strong>' + receptorXML + '</strong>. Debe ser EPC, INN o EVE520.'
+        : '⚠️ EL RECEPTOR DE LA FACTURA NO ES EPC, INN O EVE520.';
+    $('#3' + nombre).html('<p style="color:red;font-weight:600;">' + msgReceptor + '</p>');
+    $('#' + nombre).val('');
+
+// ── NUEVO: UUID duplicado en 07XML (Comprobación de Gastos) ──
+} else if (resp.indexOf('7^^^') === 0) {
+    var partesGasto = resp.split('^^^');
+    var numeroGasto = partesGasto[1] ? $.trim(partesGasto[1]) : '';
+    var msgGasto = numeroGasto !== ''
+        ? '<p style="color:#9C2007;font-weight:600;">⚠️ UUID YA REGISTRADO EN COMPROBACIÓN DE GASTOS — ID: <strong>' + numeroGasto + '</strong></p>'
+        : '<p style="color:#9C2007;font-weight:600;">⚠️ UUID PREVIAMENTE CARGADO EN COMPROBACIÓN DE GASTOS.</p>';
+    $('#3' + nombre).html(msgGasto);
+    $('#' + nombre).val('');
+
+} else {
+                var result = response.split('^^');
+                $('#' + nombre).val(result[1]);
+                $('#3' + nombre).html('<p style="color:green;">✅ <a target="_blank" href="includes/archivos/' + $.trim(result[0]) + '">Visualizar archivo</a></p>');
+
+                var formaPago = $.trim(result[2] || '');
+                if (formaPago.length) {
+                    bloquearFormaPagoDesdeXml(formaPago);
+                }
+
+                if ((result[1] || '').length > 1) {
+                    $('#respuestaser').html('<p style="color:green;font-size:25px;font-weight:bolder;">XML CORRECTAMENTE CARGADO CON EL UUID:<br> ' + result[1] + '</p>');
+                    $('#reseteaxml').remove();
+                }
+            }
+        }
+    });
 }
-else if(responseParts[0] === '3' ){
-var numeroSolicitud = $.trim(responseParts[1] || '');
-if(numeroSolicitud.length){
-	$('#3'+nombre).html('<p style="color:red;font-weight:600;">⚠️ UUID YA REGISTRADO — Se encuentra en la solicitud número: <strong>'+numeroSolicitud+'</strong></p>');
-}else{
-	$('#3'+nombre).html('<p style="color:red;">UUID PREVIAMENTE CARGADO.</p>');
-}
-
-}
-else{
-	
-var result = response.split('^^');
-		$('#'+nombre).val(result[1]);
-		$('#3'+nombre).html('<a target="_blank" href="includes/archivos/'+$.trim(result[0])+'">Visualizar!</a>');
-		var formaPago = $.trim(result[2] || '');
-		if(formaPago.length){
-			bloquearFormaPagoDesdeXml(formaPago);
-
-		}
-
-		if(result[1].length>1){
-			$('#respuestaser').html('<p style="color:green;font-size:25px;font-weight: bolder;">XML CORRECTAMENTE CARGADO CON EL UUID:<br> '+result[1]+'</p>');
-			$('#reseteaxml').remove(); 
-		}
-		
-
-}
-
-	            }
-	        });
-	    }
-	}
     $(document).ready(function(){
 
 
 $("#clickPAGOP").click(function(){
 	
    $.ajax({  
-    url:"ventasoperaciones3/controladorPP.php",
+    url:"ventasoperaciones2/controladorPP.php",
     method:"POST",  
     data:$('#ListadoPAGOPROVEEform').serialize(),
 

@@ -138,11 +138,12 @@ function ajax_file_upload1(file_obj, nombre) {
                 $('#1' + nombre).html('<p style="color:red;">Error, archivo diferente a PDF, JPG o GIF.</p>');
                 $('#' + nombre).val('');
 
-            } else if (resp.indexOf('3^^') === 0) {
+           } else if (resp.indexOf('3^^') === 0) {
                 var partes = resp.split('^^');
                 var numeroSolicitud = partes[1] ? $.trim(partes[1]) : '';
+                var numeroEvento = partes[2] ? $.trim(partes[2]) : '';
                 var msgDuplicado = numeroSolicitud !== ''
-                    ? '<p style="color:red;font-weight:600;">⚠️ UUID YA REGISTRADO — Se encuentra en la solicitud: <strong>' + numeroSolicitud + '</strong></p>'
+                    ? '<p style="color:red;font-weight:600;">⚠️ UUID YA REGISTRADO — Se encuentra en la solicitud: <strong>' + numeroSolicitud + '</strong>' + (numeroEvento !== '' ? ' | Evento: <strong>' + numeroEvento + '</strong>' : '') + '</p>'
                     : '<p style="color:red;font-weight:600;">⚠️ UUID PREVIAMENTE CARGADO.</p>';
                 $('#1' + nombre).html(msgDuplicado);
                 $('#' + nombre).val('');

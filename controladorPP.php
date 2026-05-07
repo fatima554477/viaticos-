@@ -15,7 +15,7 @@ fecha fatis : 03/04/2024
 
 define('__ROOT1__', dirname(dirname(__FILE__)));
 include_once (__ROOT1__."/includes/error_reporting.php");
-include_once (__ROOT1__."/ventasoperaciones2/class.epcinnPP.php");
+include_once (__ROOT1__."/ventasoperaciones3/class.epcinnPP.php");
 
 $pagoproveedores= NEW accesoclase();
 $conexion = NEW colaboradores();
@@ -301,6 +301,39 @@ elseif($borrasbdoc =='borrasbdoc'){
 }
 
 
+
+// Helper para validar si un campo de archivo realmente trae un upload válido
+$hasUpload = static function($field) {
+    return isset($_FILES[$field])
+        && is_array($_FILES[$field])
+        && isset($_FILES[$field]['error'])
+        && intval($_FILES[$field]['error']) === UPLOAD_ERR_OK
+        && isset($_FILES[$field]['name'])
+        && trim((string)$_FILES[$field]['name']) !== '';
+};
+
+$subidaFacturaXML = $hasUpload('ADJUNTAR_FACTURA_XML');
+$subidaFacturaPDF = $hasUpload('ADJUNTAR_FACTURA_PDF');
+$subidaCotizacion = $hasUpload('ADJUNTAR_COTIZACION');
+$subidaTransfer = $hasUpload('CONPROBANTE_TRANSFERENCIA');
+$subidaArchivo1 = $hasUpload('ADJUNTAR_ARCHIVO_1');
+$subidaFotoEstado = $hasUpload('FOTO_ESTADO_PROVEE11');
+$subidaCompPagoPDF = $hasUpload('COMPLEMENTOS_PAGO_PDF');
+$subidaCompPagoXML = $hasUpload('COMPLEMENTOS_PAGO_XML');
+$subidaCancelPDF = $hasUpload('CANCELACIONES_PDF');
+$subidaCancelXML = $hasUpload('CANCELACIONES_XML');
+$subidaFactComPDF = $hasUpload('ADJUNTAR_FACTURA_DE_COMISION_PDF');
+$subidaFactComXML = $hasUpload('ADJUNTAR_FACTURA_DE_COMISION_XML');
+$subidaCalculoComision = $hasUpload('CALCULO_DE_COMISION');
+$subidaComprobanteDevolucion = $hasUpload('COMPROBANTE_DE_DEVOLUCION');
+$subidaNotaCredito = $hasUpload('NOTA_DE_CREDITO_COMPRA');
+$hayAlgunaSubida = (
+    $subidaFacturaXML || $subidaFacturaPDF || $subidaCotizacion || $subidaTransfer ||
+    $subidaArchivo1 || $subidaFotoEstado || $subidaCompPagoPDF || $subidaCompPagoXML ||
+    $subidaCancelPDF || $subidaCancelXML || $subidaFactComPDF || $subidaFactComXML ||
+    $subidaCalculoComision || $subidaComprobanteDevolucion || $subidaNotaCredito
+);
+
 // ── VALIDACIÓN DE FORMATO DE ARCHIVOS ─────────────────────────────────────
 
 $xmlFacturaInvalido = isset($_FILES['ADJUNTAR_FACTURA_XML'])
@@ -328,7 +361,7 @@ if($pdfFacturaInvalido){
 
 // ── PRE-CARGA DEL XML ────────────────────────────────────────────────────
 
-if( $_FILES["ADJUNTAR_FACTURA_XML"] == true){
+if($subidaFacturaXML){
 
 	$ADJUNTAR_FACTURA_XML2 = $pagoproveedores->solocargartemp('ADJUNTAR_FACTURA_XML');
 	$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML2;	
@@ -380,11 +413,11 @@ $IPpagoprovee = isset($_POST["IPpagoprovee"])?$_POST["IPpagoprovee"]:"";
 
 // ── BLOQUE 1: Subida con IPpagoprovee (registro existente) ────────────────
 
-if($IPpagoprovee !=''  and ($_FILES["ADJUNTAR_FACTURA_XML"] == true or $_FILES["ADJUNTAR_FACTURA_PDF"] == true or  $_FILES["ADJUNTAR_COTIZACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true or $_FILES["FOTO_ESTADO_PROVEE11"] == true  or  $_FILES["COMPLEMENTOS_PAGO_PDF"] == true or  $_FILES["COMPLEMENTOS_PAGO_XML"] == true or  $_FILES["CANCELACIONES_PDF"] == true or  $_FILES["CANCELACIONES_XML"] == true or  $_FILES ["ADJUNTAR_FACTURA_DE_COMISION_PDF"] == true or  $_FILES ["ADJUNTAR_FACTURA_DE_COMISION_XML"] == true or  $_FILES["CALCULO_DE_COMISION"] == true or  $_FILES["COMPROBANTE_DE_DEVOLUCION"] == true or  $_FILES["NOTA_DE_CREDITO_COMPRA"] == true )){
+if($IPpagoprovee !=''  and $hayAlgunaSubida){
 if($IPpagoprovee != ''){
 foreach($_FILES AS $ETQIETA => $VALOR){
 
-	if($_FILES['ADJUNTAR_FACTURA_XML']==true){
+	if($subidaFacturaXML){
 		// ── Verificar UUID ANTES de mover el archivo ──────────────────────
 		$_resultadoUUID = $pagoproveedores->VALIDA02XMLUUID($regreso['UUID']);
 if(strpos($_resultadoUUID, '3^^') === 0) {
@@ -413,13 +446,13 @@ if(strpos($_resultadoUUID, '3^^') === 0) {
 
 	}else{
 	$ADJUNTAR_FACTURA_XML = $conexion->cargar($ETQIETA,'02SUBETUFACTURADOCTOS','6',$IPpagoprovee,'si',$IPpagoprovee);
-		if($_FILES['ADJUNTAR_FACTURA_PDF']==true){
+		if($subidaFacturaPDF){
 			$pagoproveedores->borrar_pdfs(__ROOT1__.'/includes/archivos/',$IPpagoprovee,$ADJUNTAR_FACTURA_XML,'','02SUBETUFACTURADOCTOS');
 		}	
 	}
 
 	$url ='';
-	if($_FILES['ADJUNTAR_FACTURA_XML']==true){
+	if($subidaFacturaXML){
 		$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML;
 		if( file_exists($url) ){
 			$regreso = $conexion2->lectorxml($url);
@@ -482,7 +515,7 @@ if(strpos($_resultadoUUID, '3^^') === 0) {
 
 // ── BLOQUE 2: Subida sin IPpagoprovee (registro nuevo) ───────────────────
 
-if($IPpagoprovee =='' and $hiddenpagoproveedores != 'hiddenpagoproveedores' and ($_FILES["ADJUNTAR_FACTURA_XML"] == true or $_FILES["ADJUNTAR_FACTURA_PDF"] == true or  $_FILES["ADJUNTAR_COTIZACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true  or $_FILES["FOTO_ESTADO_PROVEE11"] ==  true or  $_FILES["COMPLEMENTOS_PAGO_PDF"] == true or  $_FILES["COMPLEMENTOS_PAGO_XML"] == true or  $_FILES["CANCELACIONES_PDF"] == true or  $_FILES["CANCELACIONES_XML"] == true or  $_FILES ["ADJUNTAR_FACTURA_DE_COMISION_PDF"] == true or  $_FILES ["ADJUNTAR_FACTURA_DE_COMISION_XML"] == true or  $_FILES["CALCULO_DE_COMISION"] == true or  $_FILES["COMPROBANTE_DE_DEVOLUCION"] == true or  $_FILES["NOTA_DE_CREDITO_COMPRA"] == true )){
+if($IPpagoprovee =='' and $hiddenpagoproveedores != 'hiddenpagoproveedores' and $hayAlgunaSubida){
 
 	// ── CORRECCIÓN: Garantizar idem1 e idPROV válidos siempre ────────────
 	$idem1 = (isset($_SESSION['idem']) && $_SESSION['idem'] != '') ? $_SESSION['idem'] : 1;
@@ -501,7 +534,7 @@ if($IPpagoprovee =='' and $hiddenpagoproveedores != 'hiddenpagoproveedores' and 
 
     foreach($_FILES AS $ETQIETA => $VALOR){
 
-		if($_FILES['ADJUNTAR_FACTURA_XML']==true){
+		if($subidaFacturaXML){
 			$ADJUNTAR_FACTURA_XML = $conexion->sologuardar6_usuario($ETQIETA,$ADJUNTAR_FACTURA_XML2,'02SUBETUFACTURADOCTOS',$idPROV,$IPpagoprovee,$idem1,'xml');	
 		}else{
 			// ── Usar idem1 como identificador para asociar el archivo al usuario actual ──
@@ -509,7 +542,7 @@ if($IPpagoprovee =='' and $hiddenpagoproveedores != 'hiddenpagoproveedores' and 
 		}
 
 		$url ='';
-		if($_FILES['ADJUNTAR_FACTURA_XML']==true){
+		if($subidaFacturaXML){
 			$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML;
 			if( file_exists($url) ){
 				$regreso = $conexion2->lectorxml($url);

@@ -2,23 +2,37 @@
 
 /**
  	--------------------------
-	Autor: Sandor Matamoros
+
 	Programer: Fatima Arellano
 	Propietario: EPC
     fecha sandor: 
     fecha fatis : 05/06/2025
 
 	----------------------------
- 
 */
 
+if(!isset($_SESSION)) { session_start(); }
+define("__ROOT6__", dirname(__FILE__));
+$action = (isset($_POST["action"]) && $_POST["action"] != NULL) ? $_POST["action"] : "";
 
-	if(!isset($_SESSION)) 
-    { 
-        session_start(); 
-    }
-	define("__ROOT6__", dirname(__FILE__));
-$action = (isset($_POST["action"])&& $_POST["action"] !=NULL)?$_POST["action"]:"";
+
+if($action == "bitacora_pago"){
+	require(__ROOT6__."/class.filtro.php");
+	$database = new orders();
+	$idSubetufactura = isset($_POST['idSubetufactura']) ? intval($_POST['idSubetufactura']) : 0;
+
+	header('Content-Type: application/json; charset=utf-8');
+
+	if($idSubetufactura <= 0){
+		echo json_encode(array());
+		exit;
+	}
+
+
+	echo json_encode($database->Listado_bitacora_pagoproveedor_array($idSubetufactura));
+	exit;
+}
+/* ===================================================================== */
 if($action == "ajax"){
 
 	require(__ROOT6__."/class.filtro.php");
@@ -537,6 +551,7 @@ if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=
 <th style="background:#c9e8e8;text-align:center"></th>
 <th style="background:#c9e8e8;text-align:center"></th>
 <th style="background:#c9e8e8;text-align:center"></th>
+<th style="background:#c9e8e8;text-align:center"></th>
 
 
             </tr>
@@ -1021,6 +1036,7 @@ $SUBTOL2ig = $SUBTOL2i - $SUBTOL2g ;
 $propina12ig = $propina12i - $propina12g;
  ?>
 	
+		<td style="background:#c9e8e8"></td>
 		<td style="background:#c9e8e8"></td>
 		<td style="background:#c9e8e8"></td>
 		<td style="background:#c9e8e8"></td>
@@ -1951,6 +1967,11 @@ if ($ncplleno && $uuidVacio && $SICOMPRO ) {
 
 ?>
 
+<td <?php echo $fondo_existe_xml; ?>>
+	<input type="button" value="BITÁCORA"
+		id="<?php echo $row['02SUBETUFACTURAid']; ?>"
+		class="btn btn-outline-primary btn-xs view_dataPAGOPROVEEbitacora" />
+</td>
 <td  <?php echo $fondo_existe_xml; ?>>
 <?php if($database->variablespermisos('','reembolsos','modificar')=='si'){ ?>
 

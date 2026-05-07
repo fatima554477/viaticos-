@@ -11,6 +11,7 @@ $connecDB = $conexion->db();
 if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH'] != 'XMLHttpRequest') {
 $idem_usuario = $_SESSION['idem'];
 $pagoproveedores->borrar_historico_xml('02SUBETUFACTURADOCTOS',$idem_usuario);
+$_SESSION['idPROV'] = '';
 $_SESSION['P_NOMBRE_COMERCIAL_EMPRESA12'] = '';
 $_SESSION['idusuario12']= '';
 
@@ -302,7 +303,7 @@ echo "<a target='_blank' href='includes/archivos/".$rowsube['ADJUNTAR_FACTURA_PD
 
                  <tr style="background: #d2faf1"> 
 
-     <th scope="row"> <label for="validationCustom03" class="form-label">NOMBRE COMERCIAL</label></th>
+     <th scope="row"> <label for="validationCustom03" class="form-label">NOMBRE COMERCIAL</label><br><a style="color:red;font-size:11px">OBLIGATORIO</a></th>
    <td><input type="text" class="form-control"  required=""  value="<?php echo $NOMBRE_COMERCIAL; ?>" name="NOMBRE_COMERCIAL" placeholder="NOMBRE COMERCIAL"></td>
                  </tr>
 				 
@@ -335,7 +336,7 @@ echo "<a target='_blank' href='includes/archivos/".$rowsube['ADJUNTAR_FACTURA_PD
 				 
 				                  <tr  style="background: #d2faf1">
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">MOTIVO DEL GASTO:</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">MOTIVO DEL GASTO:</label><br><a style="color:red;font-size:11px">OBLIGATORIO</a></th>
                  <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $MOTIVO_GASTO; ?>" name="MOTIVO_GASTO"placeholder="MOTIVO DEL GASTO "></td>
                  </tr>
                  <tr style="background: #d2faf1">
@@ -435,7 +436,7 @@ var parametros = {
 
             <tr style="background:#fcf3cf">
 					<th scope="row">
-						<label style="width:300px" for="validationCustom03" class="form-label">SUB TOTAL:</label>
+						<label style="width:300px" for="validationCustom03" class="form-label">SUB TOTAL:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label>
 					</th>
 					<td>
 						<div id="2MONTO_FACTURA">
@@ -511,7 +512,7 @@ var parametros = {
                  <th scope="row"> <label  style="width:300px" for="validationCustom03" class="form-label">TOTAL:</label></th>
                  <td>
 				 <div id="2MONTO_DEPOSITAR">
-             <div class="input-group mb-3"> <span class="input-group-text">$</span><input type="text" class="form-control" id="MONTO_DEPOSITAR" required=""   value="<?php echo $total; ?>" name="MONTO_DEPOSITAR"  placeholder="TOTAL">
+             <div class="input-group mb-3"> <span class="input-group-text">$</span><input type="text" class="form-control" id="MONTO_DEPOSITAR" required=""   value="<?php echo $total; ?>" name="MONTO_DEPOSITAR"  placeholder="TOTAL" readonly="readonly"sssS>
 				
 				 </td>
                  </tr> </div> </div>
@@ -579,7 +580,7 @@ var parametros = {
 				 
                  <tr  style="background: #d2faf1">
 
-                 <th><label style="width: 300px" for="validationCustom02" class="form-label">FORMA DE PAGO:</label></th>
+                 <th><label style="width: 300px" for="validationCustom02" class="form-label">FORMA DE PAGO:</label><br><a style="color:red;font-size:11px">OBLIGATORIO</a></th>
 				 
 				 
              <td style="width: 45%;">
@@ -621,7 +622,7 @@ var parametros = {
 
                  <tr style="background: #d2faf1"> 
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">FECHA EFECTIVA DE PAGO:</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">FECHA EFECTIVA DE PAGO:</label><br><a style="color:red;font-size:11px">OBLIGATORIO</a></th>
                  <td><input type="date" class="form-control" id="validationCustom03" required=""  value="<?php echo $FECHA_A_DEPOSITAR; ?>" name="FECHA_A_DEPOSITAR" placeholder="FECHA A DEPOSITAR" ></td>
                  </tr>
 
@@ -668,7 +669,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $_SESSION["NOMBREUSUARIO"]; ?>" name="NOMBRE_DEL_AYUDO"placeholder="NOMBRE DEL EJECUTIVO" readonly="readonly"></td>
 </tr>					 
 <tr>
-    <th style="background: #d2faf1; text-align:left" scope="col">EJECUTIVO QUE REALIZÓ ESTE GASTO:</th>
+    <th style="background: #d2faf1; text-align:left" scope="col">EJECUTIVO QUE REALIZÓ ESTE GASTO<br><a style="color:red;font-size:11px">OBLIGATORIO</a></th>
        <td  style="background: #d2faf1"  >
 <?php
 $encabezadoA = '';

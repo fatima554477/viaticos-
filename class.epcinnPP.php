@@ -144,17 +144,183 @@ class accesoclase extends colaboradores {
         return isset($etiquetas[$campo]) ? $etiquetas[$campo] : str_replace('_', ' ', $campo);
     }
 
-    public function registrar_bitacora_adjuntos($idcomprobacion, $tipoAdjunto, $nombreArchivo) {
-        $conn = $this->db();
-        $idcomprobacion = intval($idcomprobacion);
-        if ($idcomprobacion <= 0 || trim($tipoAdjunto) == '') return;
+public function registrar_bitacora_adjuntos($idcomprobacion, $tipoAdjunto, $nombreArchivo) {
+    $conn = $this->db();
 
-        $detalle = 'Se subió archivo ' . trim($tipoAdjunto);
-        if (trim($nombreArchivo) != '') $detalle .= ': ' . trim($nombreArchivo);
-        $detalle .= '.';
+    $idcomprobacion = intval($idcomprobacion);
+    $tipoAdjunto    = trim($tipoAdjunto);
+    $nombreArchivo  = trim(urldecode($nombreArchivo));
 
-        $this->registrar_bitacora($conn, $idcomprobacion, 'ADJUNTO', $detalle, '', $this->nombre_usuario_bitacora());
+    if ($idcomprobacion <= 0 || $tipoAdjunto == '') {
+        return;
     }
+
+    $tipoLegible = $this->nombre_legible_adjunto($tipoAdjunto);
+
+    $detalle = 'Se subió archivo ' . $tipoLegible;
+
+    if ($nombreArchivo != '') {
+        $detalle .= ': ' . $nombreArchivo;
+    }
+
+    $detalle .= '.';
+
+    $this->registrar_bitacora(
+        $conn,
+        $idcomprobacion,
+        'ADJUNTO',
+        $detalle,
+        '',
+        $this->nombre_usuario_bitacora()
+    );
+}
+
+private function nombre_legible_adjunto($tipo) {
+    $map = [
+        'ADJUNTAR_FACTURA_XML'              => 'FACTURA XML',
+        'ADJUNTAR_FACTURA_PDF'              => 'FACTURA PDF',
+        'ADJUNTAR_COTIZACION'               => 'COTIZACIÓN',
+        'CONPROBANTE_TRANSFERENCIA'         => 'COMPROBANTE DE TRANSFERENCIA',
+        'ADJUNTAR_ARCHIVO_1'                => 'ARCHIVO ADICIONAL',
+        'FOTO_ESTADO_PROVEE11'              => 'ESTADO DE CUENTA DEL PROVEEDOR',
+        'COMPLEMENTOS_PAGO_PDF'             => 'COMPLEMENTO DE PAGO PDF',
+        'COMPLEMENTOS_PAGO_XML'             => 'COMPLEMENTO DE PAGO XML',
+        'CANCELACIONES_PDF'                 => 'CANCELACIÓN PDF',
+        'CANCELACIONES_XML'                 => 'CANCELACIÓN XML',
+        'ADJUNTAR_FACTURA_DE_COMISION_PDF'  => 'FACTURA DE COMISIÓN PDF',
+        'ADJUNTAR_FACTURA_DE_COMISION_XML'  => 'FACTURA DE COMISIÓN XML',
+        'CALCULO_DE_COMISION'               => 'CÁLCULO DE COMISIÓN',
+        'COMPROBANTE_DE_DEVOLUCION'         => 'COMPROBANTE DE DEVOLUCIÓN',
+        'NOTA_DE_CREDITO_COMPRA'            => 'NOTA DE CRÉDITO DE COMPRA',
+    ];
+
+    return isset($map[$tipo]) ? $map[$tipo] : str_replace('_', ' ', $tipo);
+}
+
+private function columnas_adjuntos_bitacora() {
+
+    return [
+
+        'ADJUNTAR_FACTURA_XML',
+
+        'ADJUNTAR_FACTURA_PDF',
+
+        'ADJUNTAR_COTIZACION',
+
+        'CONPROBANTE_TRANSFERENCIA',
+
+        'ADJUNTAR_ARCHIVO_1',
+
+        'FOTO_ESTADO_PROVEE11',
+
+        'COMPLEMENTOS_PAGO_PDF',
+
+        'COMPLEMENTOS_PAGO_XML',
+
+        'CANCELACIONES_PDF',
+
+        'CANCELACIONES_XML',
+
+        'ADJUNTAR_FACTURA_DE_COMISION_PDF',
+
+        'ADJUNTAR_FACTURA_DE_COMISION_XML',
+
+        'CALCULO_DE_COMISION',
+
+        'COMPROBANTE_DE_DEVOLUCION',
+
+        'NOTA_DE_CREDITO_COMPRA',
+
+    ];
+
+}
+
+
+
+private function adjuntos_temporales_para_bitacora($conn, $tabla, $idRelacion) {
+
+    $tablasPermitidas = ['02SUBETUFACTURADOCTOS', '07COMPROBACIONDOCT'];
+
+    if (!in_array($tabla, $tablasPermitidas)) {
+
+        return [];
+
+    }
+
+
+
+    $idRelacion = mysqli_real_escape_string($conn, $idRelacion);
+
+    if ($idRelacion === '') {
+
+        return [];
+
+    }
+
+
+
+    $filtroUsuario = '';
+
+    if (!empty($_SESSION['idem'])) {
+
+        $idem = intval($_SESSION['idem']);
+
+        $filtroUsuario = " AND (idRelacionU = '{$idem}' OR idRelacionU = '' OR idRelacionU IS NULL)";
+
+    }
+
+
+
+    $query = mysqli_query($conn, "SELECT * FROM {$tabla} WHERE idRelacion = '{$idRelacion}' AND idTemporal = 'si'{$filtroUsuario}");
+
+    if (!$query) {
+
+        return [];
+
+    }
+
+
+
+    $adjuntos = [];
+
+    while ($row = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+
+        foreach ($this->columnas_adjuntos_bitacora() as $columna) {
+
+            if (!empty($row[$columna])) {
+
+                $adjuntos[] = $this->nombre_legible_adjunto($columna) . ': ' . trim(urldecode($row[$columna]));
+
+            }
+
+        }
+
+    }
+
+
+
+    return array_values(array_unique($adjuntos));
+
+}
+
+
+
+private function registrar_bitacora_adjuntos_ingreso($conn, $idcomprobacion, $adjuntos, $usuarioBitacora) {
+
+    if (empty($adjuntos)) {
+
+        return;
+
+    }
+
+
+
+    $detalle = 'Al ingresar el registro se adjuntaron archivos: ' . implode(' | ', $adjuntos) . '.';
+
+    $this->registrar_bitacora($conn, $idcomprobacion, 'INGRESO', $detalle, $usuarioBitacora, '');
+
+}
+
 
 
 
@@ -237,24 +403,79 @@ class accesoclase extends colaboradores {
         return mysqli_query($conn, "SELECT NUMERO_EVENTO, NOMBRE_EVENTO FROM 04altaeventos ORDER BY NUMERO_EVENTO");
     }
 
-    public function solocargartemp($archivo) {
-        $nombre_carpeta = __ROOT3__ . '/includes/archivos';
-        $nombretemp     = $_FILES[$archivo]["tmp_name"];
-        $nombrearchivo  = $_FILES[$archivo]["name"];
-        $extension      = explode('.', $nombrearchivo);
-        $cuenta         = count($extension) - 1;
-        $ext            = strtolower($extension[$cuenta]);
-        $nuevonombre    = $archivo . '_' . date('Y_m_d_h_i_s') . '.' . $ext;
+public function solocargartemp($archivo) {
 
-        $permitidos = ['pdf', 'gif', 'jpeg', 'jpg', 'png', 'mp4', 'docx', 'doc', 'xml'];
-        if (!in_array($ext, $permitidos)) return "2";
+    $nombre_carpeta = __ROOT3__ . '/includes/archivos';
 
-        if (move_uploaded_file($nombretemp, $nombre_carpeta . '/' . $nuevonombre)) {
-            chmod($nombre_carpeta . '/' . $nuevonombre, 0755);
-            return trim($nuevonombre);
-        }
-        return "1";
+    // ── Validar error de subida y archivo vacío ───────────────────────
+    if (!isset($_FILES[$archivo]) || $_FILES[$archivo]['error'] !== UPLOAD_ERR_OK) {
+        return "ERROR_SUBIDA";
     }
+
+    if ($_FILES[$archivo]['size'] === 0) {
+        return "VACIO";
+    }
+
+    $nombretemp = $_FILES[$archivo]["tmp_name"];
+
+    // Nombre original
+    $nombrearchivo = $_FILES[$archivo]["name"];
+
+    // Corregir codificación
+    $nombrearchivo = urldecode($nombrearchivo);
+
+    if (!mb_check_encoding($nombrearchivo, 'UTF-8')) {
+        $nombrearchivo = mb_convert_encoding($nombrearchivo, 'UTF-8', 'ISO-8859-1');
+    }
+
+    $nombrearchivo = iconv('UTF-8', 'UTF-8//IGNORE', $nombrearchivo);
+
+    $extension = explode('.', $nombrearchivo);
+    $cuenta = count($extension) - 1;
+    $ext = strtolower($extension[$cuenta]);
+
+    // ── Validar que tiene extensión real ─────────────────────────────
+    if ($cuenta === 0 || trim($ext) === '') {
+        return "SIN_EXTENSION";
+    }
+
+    // ── Sanitizar nombre ─────────────────────────────────────────────
+    $nombrebase = pathinfo($nombrearchivo, PATHINFO_FILENAME);
+
+    // Quitar caracteres conflictivos
+    $nombrebase = preg_replace('/[^a-zA-Z0-9_\-áéíóúÁÉÍÓÚñÑüÜ]/u', '_', $nombrebase);
+
+    // Colapsar guiones bajos múltiples
+    $nombrebase = preg_replace('/_+/', '_', $nombrebase);
+
+    // Quitar guiones bajos al inicio y al final
+    $nombrebase = trim($nombrebase, '_');
+
+    // Limitar longitud
+    if (mb_strlen($nombrebase) > 60) {
+        $nombrebase = mb_substr($nombrebase, 0, 60);
+    }
+
+    // Fallback si quedó vacío
+    if ($nombrebase === '') {
+        $nombrebase = 'archivo';
+    }
+
+    $nuevonombre = $archivo . '_' . $nombrebase . '_' . date('Y_m_d_H_i_s') . '.' . $ext;
+
+    $permitidos = ['pdf', 'gif', 'jpeg', 'jpg', 'png', 'mp4', 'docx', 'doc', 'xml'];
+
+    if (!in_array($ext, $permitidos)) {
+        return "2";
+    }
+
+    if (move_uploaded_file($nombretemp, $nombre_carpeta . '/' . $nuevonombre)) {
+        chmod($nombre_carpeta . '/' . $nuevonombre, 0755);
+        return trim($nuevonombre);
+    }
+
+    return "1";
+}
 
     public function pendiente_pago($total_menos_depositado, $NUMERO_EVENTO) {
         $total_menos_depositado = str_replace(',', '', $total_menos_depositado);
@@ -290,29 +511,32 @@ class accesoclase extends colaboradores {
         return mysqli_fetch_array($query, MYSQLI_ASSOC);
     }
 
-public function variable_SUBETUFACTURA() {
-    $conn = $this->db();
-    if (empty($_SESSION['idPROV'])) return [];
-    
-    // Verificar que el documento temporal pertenece al usuario activo
-    $idem = intval($_SESSION['idem']);
-    $query = mysqli_query($conn, 
-        "SELECT * FROM 02SUBETUFACTURADOCTOS 
-         WHERE idRelacion = '" . $_SESSION['idPROV'] . "' 
-         AND idRelacionU = '{$idem}'   -- <-- agregar esta validación
-         AND idTemporal = 'si' 
-         AND (ADJUNTAR_FACTURA_XML IS NOT NULL OR ADJUNTAR_FACTURA_XML <> '') 
-         ORDER BY id DESC"
-    );
-    return mysqli_fetch_array($query, MYSQLI_ASSOC);
-}
+	public function variable_SUBETUFACTURA(){
+		$conn = $this->db();
+		$idUsuario = isset($_SESSION['idem']) ? mysqli_real_escape_string($conn, $_SESSION['idem']) : '';
 
-    public function variable_SUBETUFACTURA2($id12) {
-        $conn  = $this->db();
-        $id12  = mysqli_real_escape_string($conn, $id12);
-        $query = mysqli_query($conn, "SELECT * FROM 02SUBETUFACTURADOCTOS WHERE idRelacion = '{$id12}' AND idTemporal = 'si' AND (ADJUNTAR_FACTURA_XML IS NOT NULL OR ADJUNTAR_FACTURA_XML <> '') ORDER BY id DESC");
-        return mysqli_fetch_array($query, MYSQLI_ASSOC);
-    }
+		$filtroUsuario = ($idUsuario !== '') ? " and idRelacionU = '".$idUsuario."'" : '';
+
+		$variablequery = "select * from 02SUBETUFACTURADOCTOS where idRelacion = '".$_SESSION['idPROV']."' and idTemporal = 'si'".$filtroUsuario." and ADJUNTAR_FACTURA_XML is not null and ADJUNTAR_FACTURA_XML <> '' order by id desc ";
+		$arrayquery = mysqli_query($conn,$variablequery);
+		return $row = mysqli_fetch_array($arrayquery, MYSQLI_ASSOC);
+	}
+
+	public function variable_SUBETUFACTURA2($id12){
+		$conn = $this->db();
+		$idUsuario = isset($_SESSION['idem']) ? $_SESSION['idem'] : (isset($_SESSION['idempermiso']) ? $_SESSION['idempermiso'] : '');
+
+		$variablequery = "select * from 02SUBETUFACTURADOCTOS where
+		idRelacion = '".$id12."' and
+		idTemporal = 'si' and ADJUNTAR_FACTURA_XML is not null and ADJUNTAR_FACTURA_XML <> '' and
+
+		idRelacionU = '".mysqli_real_escape_string($conn, $idUsuario)."' and
+
+		TIPOARCHIVO = 'xml'
+		order by id desc ";
+		$arrayquery = mysqli_query($conn,$variablequery);
+		return $row = mysqli_fetch_array($arrayquery, MYSQLI_ASSOC);
+	}
 
     public function revisar_pagoproveedor() {
         $conn  = $this->db();
@@ -447,8 +671,7 @@ public function variable_SUBETUFACTURA() {
         $Propina              = isset($regreso['Propina']) ? $regreso['Propina'] : '';
 
         $this->actualizar_forma_pago($ultimo_id, $formaDePago);
-		
-		$nombreE                  = mysqli_real_escape_string($conn, $nombreE);
+				$nombreE                  = mysqli_real_escape_string($conn, $nombreE);
 
         $camposComunes = "`Version`='{$Version}',`fechaTimbrado`='{$FechaTimbrado}',`tipoDeComprobante`='{$tipoDeComprobante}',
             `metodoDePago`='{$metodoDePago}',`formaDePago`='{$formaDePago}',`condicionesDePago`='{$condicionesDePago}',
@@ -484,7 +707,7 @@ public function variable_SUBETUFACTURA() {
             echo "Ingresado";
         } else {
             mysqli_query($conn, "UPDATE {$tabla} SET {$camposComunes} WHERE `ultimo_id`='{$ultimo_id}'") or die('P352' . mysqli_error($conn));
-            echo "Actualizado";
+            echo " ";
         }
     }
 
@@ -554,10 +777,6 @@ public function variable_SUBETUFACTURA() {
 
     $NOMBRE_COMERCIAL            = mysqli_real_escape_string($conn, $NOMBRE_COMERCIAL);
     $RAZON_SOCIAL                = mysqli_real_escape_string($conn, $RAZON_SOCIAL);
-    $VIATICOSOPRO                = mysqli_real_escape_string($conn, $VIATICOSOPRO);
-    $RFC_PROVEEDOR               = mysqli_real_escape_string($conn, $RFC_PROVEEDOR);
-    $NUMERO_EVENTO               = mysqli_real_escape_string($conn, $NUMERO_EVENTO);
-    $NOMBRE_EVENTO               = mysqli_real_escape_string($conn, $NOMBRE_EVENTO);
 	$OBSERVACIONES_1             = mysqli_real_escape_string($conn, $OBSERVACIONES_1);
 
         // Obtener nombre comercial
@@ -723,34 +942,38 @@ if ($doctoActual) {
                 }
             }
 
-            $detalleActualizacion = count($cambiosDetectados) > 0
-                ? 'Se actualizó. Cambios detectados: ' . implode(' | ', $cambiosDetectados) . '.'
-                : 'Se guardó sin cambios detectados en los campos monitoreados.';
+            if (count($cambiosDetectados) > 0) {
+                $detalleActualizacion = 'Se actualizó. Cambios detectados: ' . implode(' | ', $cambiosDetectados) . '.';
+                $this->registrar_bitacora($conn, $IPpagoprovee, 'ACTUALIZACION', $detalleActualizacion, '', $usuarioBitacora);
+            }
 
-            $this->registrar_bitacora($conn, $IPpagoprovee, 'ACTUALIZACION', $detalleActualizacion, '', $usuarioBitacora);
             return "Actualizado";
 
         } else {
 
             mysqli_query($conn, $var2) or die('P160' . mysqli_error($conn));
             $ultimo_id = mysqli_insert_id($conn);
+			 $adjuntosIngreso = $this->adjuntos_temporales_para_bitacora($conn, '02SUBETUFACTURADOCTOS', $_SESSION['idPROV']);
+
 
             $this->registrar_bitacora($conn, $ultimo_id, 'INGRESO', 'Registro ingresado desde el módulo VIÁTICOS.', $usuarioBitacora, '');
+     $this->registrar_bitacora_adjuntos_ingreso($conn, $ultimo_id, $adjuntosIngreso, $usuarioBitacora);
 
             // ── Parsear XML una sola vez y reutilizar los datos ───────────
-            $regresourl = $this->variable_SUBETUFACTURA2($_SESSION['idPROV']);
-            $urlXml     = __ROOT3__ . '/includes/archivos/' . $regresourl['ADJUNTAR_FACTURA_XML'];
-            $datosXml   = null;
-            if (file_exists($urlXml)) {
-                $conexion2 = new herramientas();
-                $datosXml  = $conexion2->lectorxml($urlXml);
-            }
-            // Pasar $datosXml ya leídos — guardarxmlDB2 NO releerá el archivo
-            $this->guardarxmlDB2($ultimo_id, $_SESSION['idPROV'], '02XML', $urlXml, $datosXml);
+				$regresourl = $this->variable_SUBETUFACTURA2($_SESSION['idPROV']);
+				$url = __ROOT3__.'/includes/archivos/'.$regresourl['ADJUNTAR_FACTURA_XML'];
+				ob_start();
+				$this->guardarxmlDB2($ultimo_id,$_SESSION['idPROV'],'02XML',$url);
+				ob_end_clean();
+				$idUsuarioTemporal = isset($_SESSION['idem']) ? mysqli_real_escape_string($conn, $_SESSION['idem']) : '';
 
-            mysqli_query($conn, "UPDATE 02SUBETUFACTURADOCTOS SET idTemporal='{$ultimo_id}' WHERE idRelacion='" . $_SESSION['idPROV'] . "' AND idTemporal='si'");
+				$filtroUsuarioTemporal = ($idUsuarioTemporal !== '') ? " and idRelacionU = '".$idUsuarioTemporal."'" : '';
 
-            return "Ingresado";
+				mysqli_query($conn,
+					"UPDATE 02SUBETUFACTURADOCTOS SET idTemporal ='".$ultimo_id."'
+							where idRelacion = '".$_SESSION['idPROV']."' and idTemporal ='si'".$filtroUsuarioTemporal);
+
+				return "Ingresado";
         }
     }
 
@@ -868,33 +1091,51 @@ if ($doctoActual) {
         return $row['id'];
     }
 
-public function VALIDA02XMLUUID($uuid) {
+public function VALIDA02XMLUUID($uuid, $ultimoIdActual = '') {
     $conn  = $this->db();
-    $uuid  = mysqli_real_escape_string($conn, $uuid);
+    $uuid  = mysqli_real_escape_string($conn, trim((string)$uuid));
+    $ultimoIdActual = intval($ultimoIdActual);
 
-    // ── Verificar en 02XML ──
-    $query = mysqli_query($conn, "SELECT 02XML.id, 02XML.UUID, 02SUBETUFACTURA.NUMERO_CONSECUTIVO_PROVEE, 02SUBETUFACTURA.NUMERO_EVENTO
-        FROM 02XML LEFT JOIN 02SUBETUFACTURA ON 02XML.ultimo_id = 02SUBETUFACTURA.id
-        WHERE 02XML.UUID='{$uuid}'");
-    $row = mysqli_fetch_array($query, MYSQLI_ASSOC);
+    if ($uuid === '') {
+        return 'S';
+    }
 
-    if ($row['id']) {
-        $numero = ($row['NUMERO_CONSECUTIVO_PROVEE'] != '') ? $row['NUMERO_CONSECUTIVO_PROVEE'] : $row['id'];
+    // ── Verificar en 02XML sólo contra solicitudes reales ───────────────
+    // Antes se usaba LEFT JOIN y se reportaba como duplicado un XML huérfano
+    // (02XML sin 02SUBETUFACTURA). Eso mostraba un número que no existía al
+    // buscar la solicitud. Además, al editar una solicitud se debe permitir
+    // volver a validar su propio XML.
+    $whereSolicitudActual = $ultimoIdActual > 0 ? " AND 02XML.ultimo_id <> '{$ultimoIdActual}'" : '';
+    $query = mysqli_query($conn, "SELECT 02XML.id, 02XML.UUID, 02XML.ultimo_id,
+            02SUBETUFACTURA.id AS idSolicitud,
+            02SUBETUFACTURA.NUMERO_CONSECUTIVO_PROVEE,
+            02SUBETUFACTURA.NUMERO_EVENTO
+        FROM 02XML
+        INNER JOIN 02SUBETUFACTURA ON 02XML.ultimo_id = 02SUBETUFACTURA.id
+        WHERE 02XML.UUID='{$uuid}'{$whereSolicitudActual}
+        ORDER BY 02XML.id DESC
+        LIMIT 1");
+    $row = $query ? mysqli_fetch_array($query, MYSQLI_ASSOC) : null;
+
+    if (!empty($row['id'])) {
+        $numero = !empty($row['NUMERO_CONSECUTIVO_PROVEE']) ? $row['NUMERO_CONSECUTIVO_PROVEE'] : $row['idSolicitud'];
         $numeroEvento = isset($row['NUMERO_EVENTO']) ? trim((string)$row['NUMERO_EVENTO']) : '';
         return '3^^' . $numero . '^^' . $numeroEvento;
     }
 
     // ── Verificar en 07XML (Comprobación de Gastos) ──
-    $query7 = mysqli_query($conn, "SELECT id, ultimo_id FROM 07XML WHERE UUID='{$uuid}'");
-    $row7   = mysqli_fetch_array($query7, MYSQLI_ASSOC);
+    $query7 = mysqli_query($conn, "SELECT id, ultimo_id FROM 07XML WHERE UUID='{$uuid}' LIMIT 1");
+    $row7   = $query7 ? mysqli_fetch_array($query7, MYSQLI_ASSOC) : null;
 
-    if ($row7['id']) {
+    if (!empty($row7['id'])) {
         $numero7 = ($row7['ultimo_id'] != '') ? $row7['ultimo_id'] : $row7['id'];
         return '7^^^' . $numero7;
     }
 
     return 'S';
 }
+
+
 
     public function Listado_pagoproveedor() {
         $conn = $this->db();
@@ -952,9 +1193,23 @@ public function VALIDA02XMLUUID($uuid) {
 
     public function Listado_subefacturadocto($ADJUNTAR_COTIZACION) {
         $conn = $this->db();
+		     $idPROV = isset($_SESSION['idPROV']) ? intval($_SESSION['idPROV']) : 0;
+
+        $idem = isset($_SESSION['idem']) ? intval($_SESSION['idem']) : 0;
+
+
+
+        if ($idPROV <= 0 || $idem <= 0) {
+
+            return mysqli_query($conn, "SELECT id,{$ADJUNTAR_COTIZACION},fechaingreso FROM 02SUBETUFACTURADOCTOS WHERE 1=0");
+
+        }
+
         return mysqli_query($conn, "SELECT id,{$ADJUNTAR_COTIZACION},fechaingreso FROM 02SUBETUFACTURADOCTOS
-            WHERE idRelacion='" . $_SESSION['idPROV'] . "' AND idTemporal='si'
-            AND ({$ADJUNTAR_COTIZACION} IS NOT NULL OR {$ADJUNTAR_COTIZACION}<>'') ORDER BY id DESC");
+    WHERE idRelacion='{$idPROV}' AND idRelacionU='{$idem}' AND idTemporal='si'
+
+            AND {$ADJUNTAR_COTIZACION} IS NOT NULL AND {$ADJUNTAR_COTIZACION}<>'' ORDER BY id DESC");
+
     }
 
     public function delete_subefacturadocto2($id) {
@@ -968,63 +1223,121 @@ public function VALIDA02XMLUUID($uuid) {
         return mysqli_query($conn, "DELETE FROM 02SUBETUFACTURADOCTOS WHERE id='{$id}'");
     }
 
+
     public function delete_subefactura2nombre($nombre) {
-        $conn   = $this->db();
-        $nombre = mysqli_real_escape_string($conn, $nombre);
-        mysqli_query($conn, "DELETE FROM 02SUBETUFACTURADOCTOS WHERE ADJUNTAR_FACTURA_XML='{$nombre}'");
+        return $this->delete_subefacturadocto2nombre($nombre);
+    }
+
+    public function delete_subefacturadocto2nombre($nombre) {
+        $conn = $this->db();
+        $nombreSeguro = basename(trim((string)$nombre));
+
+        if ($nombreSeguro === '') {
+            return false;
+        }
+
+        $camposArchivos = array(
+            'ADJUNTAR_FACTURA_PDF',
+            'ADJUNTAR_FACTURA_XML',
+            'ADJUNTAR_COTIZACION',
+            'CONPROBANTE_TRANSFERENCIA',
+            'FOTO_ESTADO_PROVEE',
+            'FOTO_ESTADO_PROVEE11',
+            'COMPLEMENTOS_PAGO_PDF',
+            'COMPLEMENTOS_PAGO_XML',
+            'CANCELACIONES_PDF',
+            'CANCELACIONES_XML',
+            'ADJUNTAR_FACTURA_DE_COMISION_PDF',
+            'ADJUNTAR_FACTURA_DE_COMISION_XML',
+            'ADJUNTAR_ARCHIVO_1',
+            'CALCULO_DE_COMISION',
+            'COMPROBANTE_DE_DEVOLUCION',
+            'NOTA_DE_CREDITO_COMPRA'
+        );
+
+        $columnasExistentes = array();
+        $resultadoColumnas = mysqli_query($conn, "SHOW COLUMNS FROM 02SUBETUFACTURADOCTOS");
+        if ($resultadoColumnas) {
+            while ($columna = mysqli_fetch_array($resultadoColumnas, MYSQLI_ASSOC)) {
+                $columnasExistentes[] = $columna['Field'];
+            }
+        }
+
+        $nombreEscapado = mysqli_real_escape_string($conn, $nombreSeguro);
+        $condiciones = array();
+
+        foreach ($camposArchivos as $campo) {
+            if (in_array($campo, $columnasExistentes)) {
+                $condiciones[] = "`{$campo}`='{$nombreEscapado}'";
+            }
+        }
+
+        if (empty($condiciones)) {
+            return false;
+        }
+
+        $whereArchivos = implode(' OR ', $condiciones);
+        $query = mysqli_query($conn, "SELECT id, idTemporal, ADJUNTAR_FACTURA_XML FROM 02SUBETUFACTURADOCTOS WHERE {$whereArchivos} LIMIT 1");
+        $row = $query ? mysqli_fetch_array($query, MYSQLI_ASSOC) : null;
+
+        if ($row && $row['ADJUNTAR_FACTURA_XML'] != '') {
+            $idTemporal = mysqli_real_escape_string($conn, $row['idTemporal']);
+            mysqli_query($conn, "DELETE FROM 02XML WHERE ultimo_id='{$idTemporal}'");
+        }
+
+        $rutaArchivo = __ROOT3__ . '/includes/archivos/' . $nombreSeguro;
+        if (is_file($rutaArchivo)) {
+            unlink($rutaArchivo);
+        }
+
+        return mysqli_query($conn, "DELETE FROM 02SUBETUFACTURADOCTOS WHERE {$whereArchivos}");
     }
 
 public function borrar_historico_xml($nombretabla, $idusuario) {
     $conn      = $this->db();
-    $ruta      = __ROOT3__ . '/includes/archivos/';
     $idusuario = intval($idusuario);
 
-    // Columnas de archivos físicos que hay que borrar del servidor
+    // ✅ Nunca ejecutar si no hay usuario válido
+    if ($idusuario <= 0) return;
+
+    // ✅ Validar nombre de tabla contra lista blanca
+    $tablasPermitidas = ['02SUBETUFACTURADOCTOS', '07COMPROBACIONDOCTOS'];
+    if (!in_array($nombretabla, $tablasPermitidas)) return;
+
+    $ruta = __ROOT3__ . '/includes/archivos/';
+
     $columnas_archivos = [
-        'ADJUNTAR_FACTURA_XML',
-        'ADJUNTAR_FACTURA_PDF',
-        'ADJUNTAR_COTIZACION',
-        'CONPROBANTE_TRANSFERENCIA',
-        'ADJUNTAR_ARCHIVO_1',
-        'FOTO_ESTADO_PROVEE11',
-        'COMPLEMENTOS_PAGO_PDF',
-        'COMPLEMENTOS_PAGO_XML',
-        'CANCELACIONES_PDF',
-        'CANCELACIONES_XML',
-        'ADJUNTAR_FACTURA_DE_COMISION_PDF',
-        'ADJUNTAR_FACTURA_DE_COMISION_XML',
-        'CALCULO_DE_COMISION',
-        'COMPROBANTE_DE_DEVOLUCION',
+        'ADJUNTAR_FACTURA_XML', 'ADJUNTAR_FACTURA_PDF',
+        'ADJUNTAR_COTIZACION', 'CONPROBANTE_TRANSFERENCIA',
+        'ADJUNTAR_ARCHIVO_1', 'FOTO_ESTADO_PROVEE11',
+        'COMPLEMENTOS_PAGO_PDF', 'COMPLEMENTOS_PAGO_XML',
+        'CANCELACIONES_PDF', 'CANCELACIONES_XML',
+        'ADJUNTAR_FACTURA_DE_COMISION_PDF', 'ADJUNTAR_FACTURA_DE_COMISION_XML',
+        'CALCULO_DE_COMISION', 'COMPROBANTE_DE_DEVOLUCION',
         'NOTA_DE_CREDITO_COMPRA',
     ];
 
-    // 1. Traer todos los registros temporales del usuario
     $q = mysqli_query($conn,
         "SELECT * FROM {$nombretabla} 
          WHERE idRelacionU='{$idusuario}' 
          AND idTemporal='si'"
     ) or die('P44' . mysqli_error($conn));
 
-    // 2. Borrar cada archivo físico encontrado
     while ($row = mysqli_fetch_array($q, MYSQLI_ASSOC)) {
         foreach ($columnas_archivos as $col) {
             if (!empty($row[$col])) {
                 $archivo = $ruta . $row[$col];
-                if (file_exists($archivo)) {
-                    unlink($archivo);
-                }
+                if (file_exists($archivo)) unlink($archivo);
             }
         }
     }
 
-    // 3. Borrar TODOS los registros temporales del usuario de la tabla
     mysqli_query($conn,
         "DELETE FROM {$nombretabla} 
          WHERE idRelacionU='{$idusuario}' 
          AND idTemporal='si'"
     ) or die('P441' . mysqli_error($conn));
 
-    // 4. Limpiar sesión para evitar que cargue datos de sesiones anteriores
     $_SESSION['idPROV']                       = '';
     $_SESSION['P_NOMBRE_COMERCIAL_EMPRESA12'] = '';
     $_SESSION['idusuario12']                  = '';

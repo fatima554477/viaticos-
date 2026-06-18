@@ -256,7 +256,7 @@ if( file_exists($url) ){
 </div>
 
 
-
+<div id="1ADJUNTAR_FACTURA_PDF"></div>
 <div id="2ADJUNTAR_FACTURA_PDF"><?php 
 
 $listadosube = $pagoproveedores->Listado_subefacturadocto('ADJUNTAR_FACTURA_PDF');
@@ -589,10 +589,12 @@ var parametros = {
 <div id="2PFORMADE_PAGO">
 
        <select class="form-select mb-3" aria-label="Default select example" id="PFORMADE_PAGO" required="" name="PFORMADE_PAGO">
+	   
+	           <option style="background:#f2b4f5" <?php if($formaDePago=='03'){echo "selected";} ?> value="03">03 TRANSFERENCIA ELECTRONICA DE FONDOS</option>
 
               <option style="background:#dee6fc" <?php if($formaDePago=='04'){echo "selected";} ?> value="04">04 TARJETA DE CREDITO</option>
 			  
-              <option style="background:#f2b4f5" <?php if($formaDePago=='03'){echo "selected";} ?> value="03">03 TRANSFERENCIA ELECTRONICA DE FONDOS</option>
+      
         
               <option style="background:#ddf5da"  <?php if($formaDePago=='01'){echo "selected";} ?>  value="01 EFECTIVO" >01 EFECTIVO</option>
 				
@@ -652,7 +654,7 @@ var parametros = {
 		</div>
 
 				 
-				 <div id="2COMPROBANTE_DE_DEVOLUCION"><?php $listadosube = $pagoproveedores->Listado_subefacturadocto('COMPROBANTE_DE_DEVOLUCION');
+				 <div id="1COMPROBANTE_DE_DEVOLUCION"><?php $listadosube = $pagoproveedores->Listado_subefacturadocto('COMPROBANTE_DE_DEVOLUCION');
 
 while($rowsube=mysqli_fetch_array($listadosube)){
 	echo "<a target='_blank' href='includes/archivos/".$rowsube['CALCULO_DE_COMISION']."' id='A".$rowsube['id']."' >Visualizar!</a> "." <span id='".$rowsube['id']."' class='view_dataSBborrar2' style='cursor:pointer;color:blue;'>Borrar!</span><span > ".$rowsube['fechaingreso']."</span>".'<br/>';	
@@ -717,7 +719,7 @@ echo $encabezadoA.$option2.'</select>';
 		            </div>
 
 			 	 
-				 <div id="2ADJUNTAR_ARCHIVO_1"><?php 
+				 <div id="1ADJUNTAR_ARCHIVO_1"><?php 
 	           $listadosube = $pagoproveedores->Listado_subefacturadocto('ADJUNTAR_ARCHIVO_1');
 
 	            while($rowsube=mysqli_fetch_array($listadosube)){

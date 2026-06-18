@@ -3,11 +3,7 @@
 fecha sandor: 
 fecha fatis : 03/04/2024
 */
-?>
 
-
-
-<?php
     if(!isset($_SESSION)) 
     { 
         session_start(); 
@@ -15,7 +11,7 @@ fecha fatis : 03/04/2024
 
 define('__ROOT1__', dirname(dirname(__FILE__)));
 include_once (__ROOT1__."/includes/error_reporting.php");
-include_once (__ROOT1__."/ventasoperaciones3/class.epcinnPP.php");
+include_once (__ROOT1__."/ventasoperaciones2/class.epcinnPP.php");
 
 $pagoproveedores= NEW accesoclase();
 $conexion = NEW colaboradores();
@@ -41,7 +37,6 @@ if(!function_exists('esReceptorCorporativoVO')){
 	}
 }
                                                
-
 $hiddenpagoproveedores = isset($_POST["hiddenpagoproveedores"])?$_POST["hiddenpagoproveedores"]:"";
 $validaDATOSBANCARIOS1 = isset($_POST["validaDATOSBANCARIOS1"])?$_POST["validaDATOSBANCARIOS1"]:"";
 $ENVIARRdatosbancario1p = isset($_POST["ENVIARRdatosbancario1p"])?$_POST["ENVIARRdatosbancario1p"]:"";
@@ -249,11 +244,15 @@ $Propina = isset($_POST["Propina"])?$_POST["Propina"]:"";
 $actualiza = isset($_POST["actualiza"])?$_POST["actualiza"]:"";
 $DescripcionConcepto = isset($_POST["DescripcionConcepto"])?$_POST["DescripcionConcepto"]:"";
 
+// ── Campos obligatorios específicos de ventasoperaciones2 ─────────────────
 if( $NOMBRE_DEL_EJECUTIVO == "" OR $NOMBRE_COMERCIAL == "" OR $MOTIVO_GASTO == "" OR $FECHA_A_DEPOSITAR == "" OR $PFORMADE_PAGO == ""){
+		
+
 	echo "<P style='color:red; font-size:23px;'>FAVOR DE LLENAR CAMPOS OBLIGATORIOS</p>";
+	exit;
+
 }else{	
-	
-	
+ 	
 	$esAltaNueva = ($ENVIARPAGOprovee == 'ENVIARPAGOprovee' && trim((string)$IPpagoprovee) == '');
 	if ($esAltaNueva) {
 		$huellaPago = md5(implode('|', array(
@@ -287,55 +286,51 @@ echo $pagoproveedores->PAGOPRO ($NUMERO_CONSECUTIVO_PROVEE , $ID_RELACIONADO,$NO
 		$TImpuestosTrasladados, $TuaTotalCargos, $Descuento,$Propina, $TUA, $actualiza,  $DescripcionConcepto);
 }
 }
-
 elseif($borrapagoaproveedores == 'borrapagoaproveedores'){
 	$borra_id_PAGOP = isset($_POST["borra_id_PAGOP"])?$_POST["borra_id_PAGOP"]:"";   
 	echo  $pagoproveedores->borrapagoaproveedores($borra_id_PAGOP);
 }
 
-
-
 elseif($borrasbdoc =='borrasbdoc'){
-	$borra_id_sb = isset($_POST["borra_id_sb"])?$_POST["borra_id_sb"]:"";   
-	echo  $pagoproveedores->delete_subefacturadocto2($borra_id_sb);
+	$borra_id_sb = isset($_POST["borra_id_sb"])?trim($_POST["borra_id_sb"]):"";
+
+	if($borra_id_sb !== '' && ctype_digit($borra_id_sb)){
+		echo $pagoproveedores->delete_subefacturadocto2($borra_id_sb);
+	}else{
+		echo $pagoproveedores->delete_subefacturadocto2nombre($borra_id_sb);
+	}
 }
 
 
+// ══════════════════════════════════════════════════════════════════════════
+// VALIDACIONES GLOBALES DE ARCHIVOS
+// Se ejecutan ANTES de cualquier procesamiento de $_FILES
+// Aplican a TODOS los campos: XML, PDF, cotización, comprobantes, etc.
+// ══════════════════════════════════════════════════════════════════════════
 
-// Helper para validar si un campo de archivo realmente trae un upload válido
-$hasUpload = static function($field) {
-    return isset($_FILES[$field])
-        && is_array($_FILES[$field])
-        && isset($_FILES[$field]['error'])
-        && intval($_FILES[$field]['error']) === UPLOAD_ERR_OK
-        && isset($_FILES[$field]['name'])
-        && trim((string)$_FILES[$field]['name']) !== '';
-};
+// ── Validar archivos vacíos (0 bytes) ─────────────────────────────────────
+foreach ($_FILES as $campo => $datos) {
+    if (isset($datos['error']) && intval($datos['error']) === UPLOAD_ERR_OK) {
+        if (isset($datos['size']) && intval($datos['size']) === 0) {
+            echo 'VACIO^^' . $campo;
+            exit;
+        }
+    }
+}
 
-$subidaFacturaXML = $hasUpload('ADJUNTAR_FACTURA_XML');
-$subidaFacturaPDF = $hasUpload('ADJUNTAR_FACTURA_PDF');
-$subidaCotizacion = $hasUpload('ADJUNTAR_COTIZACION');
-$subidaTransfer = $hasUpload('CONPROBANTE_TRANSFERENCIA');
-$subidaArchivo1 = $hasUpload('ADJUNTAR_ARCHIVO_1');
-$subidaFotoEstado = $hasUpload('FOTO_ESTADO_PROVEE11');
-$subidaCompPagoPDF = $hasUpload('COMPLEMENTOS_PAGO_PDF');
-$subidaCompPagoXML = $hasUpload('COMPLEMENTOS_PAGO_XML');
-$subidaCancelPDF = $hasUpload('CANCELACIONES_PDF');
-$subidaCancelXML = $hasUpload('CANCELACIONES_XML');
-$subidaFactComPDF = $hasUpload('ADJUNTAR_FACTURA_DE_COMISION_PDF');
-$subidaFactComXML = $hasUpload('ADJUNTAR_FACTURA_DE_COMISION_XML');
-$subidaCalculoComision = $hasUpload('CALCULO_DE_COMISION');
-$subidaComprobanteDevolucion = $hasUpload('COMPROBANTE_DE_DEVOLUCION');
-$subidaNotaCredito = $hasUpload('NOTA_DE_CREDITO_COMPRA');
-$hayAlgunaSubida = (
-    $subidaFacturaXML || $subidaFacturaPDF || $subidaCotizacion || $subidaTransfer ||
-    $subidaArchivo1 || $subidaFotoEstado || $subidaCompPagoPDF || $subidaCompPagoXML ||
-    $subidaCancelPDF || $subidaCancelXML || $subidaFactComPDF || $subidaFactComXML ||
-    $subidaCalculoComision || $subidaComprobanteDevolucion || $subidaNotaCredito
-);
+// ── Validar que el archivo tiene extensión ────────────────────────────────
+foreach ($_FILES as $campo => $datos) {
+    if (isset($datos['error']) && intval($datos['error']) === UPLOAD_ERR_OK) {
+        $nombreArchivo = isset($datos['name']) ? $datos['name'] : '';
+        $partes = explode('.', $nombreArchivo);
+        if (count($partes) < 2 || trim(end($partes)) === '') {
+            echo 'SIN_EXTENSION^^' . $campo;
+            exit;
+        }
+    }
+}
 
-// ── VALIDACIÓN DE FORMATO DE ARCHIVOS ─────────────────────────────────────
-
+// ── Validar formato de archivos específicos ───────────────────────────────
 $xmlFacturaInvalido = isset($_FILES['ADJUNTAR_FACTURA_XML'])
 	&& is_array($_FILES['ADJUNTAR_FACTURA_XML'])
 	&& isset($_FILES['ADJUNTAR_FACTURA_XML']['error'])
@@ -343,7 +338,7 @@ $xmlFacturaInvalido = isset($_FILES['ADJUNTAR_FACTURA_XML'])
 	&& strtolower(pathinfo(isset($_FILES['ADJUNTAR_FACTURA_XML']['name']) ? $_FILES['ADJUNTAR_FACTURA_XML']['name'] : '', PATHINFO_EXTENSION)) !== 'xml';
 
 if($xmlFacturaInvalido){
-	echo '4';
+	echo '2';
 	exit;
 }
 
@@ -354,16 +349,35 @@ $pdfFacturaInvalido = isset($_FILES['ADJUNTAR_FACTURA_PDF'])
 	&& strtolower(pathinfo(isset($_FILES['ADJUNTAR_FACTURA_PDF']['name']) ? $_FILES['ADJUNTAR_FACTURA_PDF']['name'] : '', PATHINFO_EXTENSION)) !== 'pdf';
 
 if($pdfFacturaInvalido){
-	echo '4';
+	echo '2';
 	exit;
 }
 
 
 // ── PRE-CARGA DEL XML ────────────────────────────────────────────────────
 
-if($subidaFacturaXML){
+if( $_FILES["ADJUNTAR_FACTURA_XML"] == true){
 
 	$ADJUNTAR_FACTURA_XML2 = $pagoproveedores->solocargartemp('ADJUNTAR_FACTURA_XML');
+
+	// ── Interceptar errores de solocargartemp ──────────────────────────
+	if($ADJUNTAR_FACTURA_XML2 === 'VACIO'){
+		echo 'VACIO^^ADJUNTAR_FACTURA_XML';
+		exit;
+	}
+	if($ADJUNTAR_FACTURA_XML2 === 'SIN_EXTENSION'){
+		echo 'SIN_EXTENSION^^ADJUNTAR_FACTURA_XML';
+		exit;
+	}
+	if($ADJUNTAR_FACTURA_XML2 === 'ERROR_SUBIDA'){
+		echo 'ERROR_SUBIDA^^ADJUNTAR_FACTURA_XML';
+		exit;
+	}
+	if($ADJUNTAR_FACTURA_XML2 === '1' || $ADJUNTAR_FACTURA_XML2 === '2'){
+		echo '2';
+		exit;
+	}
+
 	$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML2;	
 	$regreso = $conexion2->lectorxml($url);
 
@@ -374,7 +388,6 @@ if($subidaFacturaXML){
 		$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML2);
 		exit;
 	}
-// ─────────────────────────────────────────────────────────────────────
 
 	$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
 	if($nombreRxml !== '' && !esReceptorCorporativoVO($nombreRxml)){
@@ -402,69 +415,86 @@ if($subidaFacturaXML){
 	$_SESSION["idPROV"] = $idwebc;
 }
 
-// ── CORRECCIÓN: $idwebc puede no estar definida si no se subió XML ───────
-$idwebc = isset($idwebc) ? $idwebc : '';
-$idPROV = (isset($_SESSION["idPROV"]) && $_SESSION["idPROV"] != '')
-          ? $_SESSION["idPROV"]
-          : (!empty($idwebc) ? $idwebc : 1);
-// ─────────────────────────────────────────────────────────────────────────
+$idPROV = isset($_SESSION["idPROV"])?$_SESSION["idPROV"]:$idwebc;
 $IPpagoprovee = isset($_POST["IPpagoprovee"])?$_POST["IPpagoprovee"]:"";
+
+// ── FIX: mismo fallback que el primer controlador, idem1 nunca queda vacío ─
+$idem1 = (isset($_SESSION['idem']) && $_SESSION['idem'] != '') ? $_SESSION['idem'] : 1;
+
+// ── FIX: para alta nueva (sin IPpagoprovee) siempre usamos idem1, igual
+//         que hace el primer controlador. Ya no se mezcla con $idPROV/$idwebc,
+//         que podían traer un valor de sesión de un proveedor distinto.
+$idPROVSubida = $idem1;
 
 
 // ── BLOQUE 1: Subida con IPpagoprovee (registro existente) ────────────────
 
-if($IPpagoprovee !=''  and $hayAlgunaSubida){
+if($IPpagoprovee !=''  and ($_FILES["ADJUNTAR_FACTURA_XML"] == true or $_FILES["ADJUNTAR_FACTURA_PDF"] == true or  $_FILES["ADJUNTAR_COTIZACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true or $_FILES["FOTO_ESTADO_PROVEE11"] == true  or  $_FILES["COMPLEMENTOS_PAGO_PDF"] == true or  $_FILES["COMPLEMENTOS_PAGO_XML"] == true or  $_FILES["CANCELACIONES_PDF"] == true or  $_FILES["CANCELACIONES_XML"] == true or  $_FILES ["ADJUNTAR_FACTURA_DE_COMISION_PDF"] == true or  $_FILES ["ADJUNTAR_FACTURA_DE_COMISION_XML"] == true or  $_FILES["CALCULO_DE_COMISION"] == true or  $_FILES["COMPROBANTE_DE_DEVOLUCION"] == true or  $_FILES["NOTA_DE_CREDITO_COMPRA"] == true )){
 if($IPpagoprovee != ''){
 foreach($_FILES AS $ETQIETA => $VALOR){
 
-	if($subidaFacturaXML){
+	if($_FILES['ADJUNTAR_FACTURA_XML']==true){
 		// ── Verificar UUID ANTES de mover el archivo ──────────────────────
-		$_resultadoUUID = $pagoproveedores->VALIDA02XMLUUID($regreso['UUID']);
-if(strpos($_resultadoUUID, '3^^') === 0) {
-    $_numSol = str_replace('3^^', '', $_resultadoUUID);
-    UNLINK(__ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML2);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML2);
-    echo '3^^'.$_numSol;
-    exit;
-} elseif(strpos($_resultadoUUID, '7^^^') === 0) {
-    $_numSol7 = str_replace('7^^^', '', $_resultadoUUID);
-    UNLINK(__ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML2);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML2);
-    echo '7^^^'.$_numSol7;
-    exit;
-} elseif($_resultadoUUID !== 'S') {
-    UNLINK(__ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML2);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML2);
-    echo '3^^';
-    exit;
-}
-		// ──────────────────────────────────────────────────────────────────
+		$_resultadoUUID = $pagoproveedores->VALIDA02XMLUUID($regreso['UUID'], $IPpagoprovee);
+		
+		if(strpos($_resultadoUUID, '3^^') === 0) {
+			UNLINK(__ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML2);
+			$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML2);
+			echo $_resultadoUUID;
+			exit;
+		} elseif(strpos($_resultadoUUID, '7^^^') === 0) {
+			$_numSol7 = str_replace('7^^^', '', $_resultadoUUID);
+			UNLINK(__ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML2);
+			$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML2);
+			echo '7^^^'.$_numSol7;
+			exit;
+		} elseif($_resultadoUUID !== 'S') {
+			UNLINK(__ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML2);
+			$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML2);
+			echo '3^^';
+			exit;
+		}
+
 	ob_start();
 	$ADJUNTAR_FACTURA_XML = $conexion->sologuardar6($ETQIETA,$ADJUNTAR_FACTURA_XML2,'02SUBETUFACTURADOCTOS',$idPROV,$IPpagoprovee);
 	ob_end_clean();
 
-
 	}else{
-	$ADJUNTAR_FACTURA_XML = $conexion->cargar($ETQIETA,'02SUBETUFACTURADOCTOS','6',$IPpagoprovee,'si',$IPpagoprovee);
-		if($subidaFacturaPDF){
+		// ── Interceptar errores de cargar() para campos no-XML ────────────
+		$resultadoCarga = $conexion->cargar($ETQIETA,'02SUBETUFACTURADOCTOS','6',$IPpagoprovee,'si',$IPpagoprovee);
+
+		if($resultadoCarga === 'VACIO'){
+			echo 'VACIO^^'.$ETQIETA;
+			exit;
+		}
+		if($resultadoCarga === 'SIN_EXTENSION'){
+			echo 'SIN_EXTENSION^^'.$ETQIETA;
+			exit;
+		}
+		if($resultadoCarga === 'ERROR_SUBIDA'){
+			echo 'ERROR_SUBIDA^^'.$ETQIETA;
+			exit;
+		}
+
+		$ADJUNTAR_FACTURA_XML = $resultadoCarga;
+
+		if($_FILES['ADJUNTAR_FACTURA_PDF']==true){
 			$pagoproveedores->borrar_pdfs(__ROOT1__.'/includes/archivos/',$IPpagoprovee,$ADJUNTAR_FACTURA_XML,'','02SUBETUFACTURADOCTOS');
 		}	
 	}
 
 	$url ='';
-	if($subidaFacturaXML){
+	if($_FILES['ADJUNTAR_FACTURA_XML']==true){
 		$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML;
 		if( file_exists($url) ){
 			$regreso = $conexion2->lectorxml($url);
 
-			// ── VALIDACIÓN: XML vacío ──────────────────────────────────────
-	if(empty($regreso) || !isset($regreso['UUID']) || trim($regreso['UUID']) === '') {
+			if(empty($regreso) || !isset($regreso['UUID']) || trim($regreso['UUID']) === '') {
 				echo '5^^';
 				UNLINK($url);
 				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
 				continue;
 			}
-			// ──────────────────────────────────────────────────────────────
 
 			$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
 			if($nombreRxml !== '' && !esReceptorCorporativoVO($nombreRxml)){
@@ -474,120 +504,132 @@ if(strpos($_resultadoUUID, '3^^') === 0) {
 				continue;
 			}
 
-			$resultado = $pagoproveedores->VALIDA02XMLUUID($regreso['UUID']);
+			$resultado = $pagoproveedores->VALIDA02XMLUUID($regreso['UUID'], $IPpagoprovee);
 			if($resultado == 'S'){
 				$pagoproveedores->borrar_xmls(__ROOT1__.'/includes/archivos/',$IPpagoprovee,$ADJUNTAR_FACTURA_XML,'02XML','02SUBETUFACTURADOCTOS');
 				echo $ADJUNTAR_FACTURA_XML.'^^'.$regreso['UUID'].'^^'.$regreso['formaDePago'].'^^'.$regreso['Descripcion'];
 				ob_start();
 				$pagoproveedores->guardarxmlDB2($IPpagoprovee,$idPROV,'02XML', $url);
 				ob_end_clean();
-				$pagoproveedores->registrar_bitacora_adjuntos($IPpagoprovee, 'XML', $ADJUNTAR_FACTURA_XML);
+				$pagoproveedores->registrar_bitacora_adjuntos($IPpagoprovee, 'XML', $_FILES[$ETQIETA]['name']);
 
-} elseif(strpos($resultado, '3^^') === 0) {
-    $numeroSolicitud = str_replace('3^^', '', $resultado);
-    echo '3^^'.$numeroSolicitud;
-    UNLINK($url);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+			} elseif(strpos($resultado, '3^^') === 0) {
+				echo $resultado;
+				UNLINK($url);
+				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
 
-} elseif(strpos($resultado, '7^^^') === 0) {
-    $numeroGasto = str_replace('7^^^', '', $resultado);
-    echo '7^^^'.$numeroGasto;
-    UNLINK($url);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+			} elseif(strpos($resultado, '7^^^') === 0) {
+				$numeroGasto = str_replace('7^^^', '', $resultado);
+				echo '7^^^'.$numeroGasto;
+				UNLINK($url);
+				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
 
-} else {
-    echo '3^^';
-    UNLINK($url);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
-}
+			} else {
+				echo '3^^';
+				UNLINK($url);
+				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+			}
 		}
 	}else{
-		if($ETQIETA == 'ADJUNTAR_FACTURA_PDF' && $ADJUNTAR_FACTURA_XML != ''){
-			$pagoproveedores->registrar_bitacora_adjuntos($IPpagoprovee, 'PDF', $ADJUNTAR_FACTURA_XML);
+		if($ADJUNTAR_FACTURA_XML != ''){
+			$tipoLabel = ($ETQIETA == 'ADJUNTAR_FACTURA_PDF') ? 'PDF' : $ETQIETA;
+			$pagoproveedores->registrar_bitacora_adjuntos($IPpagoprovee, $tipoLabel, $_FILES[$ETQIETA]['name']);
 		}
 		echo $ADJUNTAR_FACTURA_XML;
 	}
 }
 
-}else{ echo "no hay usuario seleccionado";}
+
+}
 }
 
 
 // ── BLOQUE 2: Subida sin IPpagoprovee (registro nuevo) ───────────────────
 
-if($IPpagoprovee =='' and $hiddenpagoproveedores != 'hiddenpagoproveedores' and $hayAlgunaSubida){
+if($IPpagoprovee =='' and $hiddenpagoproveedores != 'hiddenpagoproveedores' and ($_FILES["ADJUNTAR_FACTURA_XML"] == true or $_FILES["ADJUNTAR_FACTURA_PDF"] == true or  $_FILES["ADJUNTAR_COTIZACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true  or $_FILES["FOTO_ESTADO_PROVEE11"] ==  true or  $_FILES["COMPLEMENTOS_PAGO_PDF"] == true or  $_FILES["COMPLEMENTOS_PAGO_XML"] == true or  $_FILES["CANCELACIONES_PDF"] == true or  $_FILES["CANCELACIONES_XML"] == true or  $_FILES ["ADJUNTAR_FACTURA_DE_COMISION_PDF"] == true or  $_FILES ["ADJUNTAR_FACTURA_DE_COMISION_XML"] == true or  $_FILES["CALCULO_DE_COMISION"] == true or  $_FILES["COMPROBANTE_DE_DEVOLUCION"] == true or  $_FILES["NOTA_DE_CREDITO_COMPRA"] == true )){
+if($idPROVSubida != ''){
 
-	// ── CORRECCIÓN: Garantizar idem1 e idPROV válidos siempre ────────────
-	$idem1 = (isset($_SESSION['idem']) && $_SESSION['idem'] != '') ? $_SESSION['idem'] : 1;
+	// ── FIX: sincroniza la sesión igual que hace el primer controlador,
+	//         para que cualquier lectura posterior de $_SESSION["idPROV"]
+	//         (p.ej. en otra subida dentro de la misma sesión) sea consistente.
+	$_SESSION["idPROV"] = $idem1;
 
-	if(empty($idPROV) || $idPROV == ''){
-		$idPROV = (isset($_SESSION["idPROV"]) && $_SESSION["idPROV"] != '')
-		          ? $_SESSION["idPROV"]
-		          : $idem1;
-	}
+foreach($_FILES AS $ETQIETA => $VALOR){
 
-	// Persistir idPROV en sesión para que peticiones AJAX siguientes lo encuentren
-	if(!empty($idPROV)){
-		$_SESSION["idPROV"] = $idPROV;
-	}
-	// ─────────────────────────────────────────────────────────────────────
+	if($_FILES['ADJUNTAR_FACTURA_XML']==true){
+		// ── FIX: se usa $idem1 en lugar de $idPROVSubida para que el
+		//         cuarto y el sexto parámetro sean siempre la misma identidad,
+		//         igual que en el primer controlador.
+		$ADJUNTAR_FACTURA_XML = $conexion->sologuardar6_usuario($ETQIETA,$ADJUNTAR_FACTURA_XML2,'02SUBETUFACTURADOCTOS',$idem1,$IPpagoprovee,$idem1,'xml');	
+	
+	}else{
+		
+		// ── Interceptar errores de cargar() para campos no-XML ────────────
+		// ── FIX: se usa $idem1 en lugar de $idPROVSubida ───────────────────
+			$resultadoCarga2 = $conexion->cargar($ETQIETA,'02SUBETUFACTURADOCTOS','8',$idem1,'si','',$idem1);
 
-    foreach($_FILES AS $ETQIETA => $VALOR){
 
-		if($subidaFacturaXML){
-			$ADJUNTAR_FACTURA_XML = $conexion->sologuardar6_usuario($ETQIETA,$ADJUNTAR_FACTURA_XML2,'02SUBETUFACTURADOCTOS',$idPROV,$IPpagoprovee,$idem1,'xml');	
-		}else{
-			// ── Usar idem1 como identificador para asociar el archivo al usuario actual ──
-			$ADJUNTAR_FACTURA_XML = $conexion->cargar($ETQIETA,'02SUBETUFACTURADOCTOS','8',$idem1,'si','',$idem1);
+		if($resultadoCarga2 === 'VACIO'){
+			echo 'VACIO^^'.$ETQIETA;
+			exit;
+		}
+		if($resultadoCarga2 === 'SIN_EXTENSION'){
+			echo 'SIN_EXTENSION^^'.$ETQIETA;
+			exit;
+		}
+		if($resultadoCarga2 === 'ERROR_SUBIDA'){
+			echo 'ERROR_SUBIDA^^'.$ETQIETA;
+			exit;
 		}
 
-		$url ='';
-		if($subidaFacturaXML){
-			$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML;
-			if( file_exists($url) ){
-				$regreso = $conexion2->lectorxml($url);
-
-				// ── VALIDACIÓN: XML vacío ──────────────────────────────────────
-				if(empty($regreso) || !isset($regreso['UUID']) || trim($regreso['UUID']) === '') {
-					echo '5^^';
-					UNLINK($url);
-					$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
-					continue;
-				}
-				// ──────────────────────────────────────────────────────────────
-
-				$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
-				if($nombreRxml !== '' && !esReceptorCorporativoVO($nombreRxml)){
-					echo '6^^'.$nombreRxml;
-					UNLINK($url);
-					$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
-					continue;
-				}
-
-				$resultado = $pagoproveedores->VALIDA02XMLUUID($regreso['UUID']);
-				if($resultado == 'S'){
-					echo $ADJUNTAR_FACTURA_XML;
-
-} elseif(strpos($resultado, '3^^') === 0) {
-    $numeroSolicitud = str_replace('3^^', '', $resultado);
-    echo '3^^'.$numeroSolicitud;
-    UNLINK($url);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
-
-} elseif(strpos($resultado, '7^^^') === 0) {
-    $numeroGasto = str_replace('7^^^', '', $resultado);
-    echo '7^^^'.$numeroGasto;
-    UNLINK($url);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
-
-} else {
-    echo '3^^';
-    UNLINK($url);
-    $pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
-}
-			}
-		}else{echo $ADJUNTAR_FACTURA_XML;}
+		$ADJUNTAR_FACTURA_XML = $resultadoCarga2;
 	}
+
+	$url ='';
+	if($_FILES['ADJUNTAR_FACTURA_XML']==true){
+		$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML;
+		if( file_exists($url) ){
+			$regreso = $conexion2->lectorxml($url);
+
+			if(empty($regreso) || !isset($regreso['UUID']) || trim($regreso['UUID']) === '') {
+				echo '5^^';
+				UNLINK($url);
+				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+				continue;
+			}
+
+			$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
+			if($nombreRxml !== '' && !esReceptorCorporativoVO($nombreRxml)){
+				echo '6^^'.$nombreRxml;
+				UNLINK($url);
+				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+				continue;
+			}
+
+			$resultado = $pagoproveedores->VALIDA02XMLUUID($regreso['UUID'], $IPpagoprovee);
+			if($resultado == 'S'){
+				echo $ADJUNTAR_FACTURA_XML;
+
+			} elseif(strpos($resultado, '3^^') === 0) {
+				$numeroSolicitud = str_replace('3^^', '', $resultado);
+				echo '3^^'.$numeroSolicitud;
+				UNLINK($url);
+				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+			} elseif(strpos($resultado, '7^^^') === 0) {
+				$numeroGasto = str_replace('7^^^', '', $resultado);
+				echo '7^^^'.$numeroGasto;
+				UNLINK($url);
+				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+			} else {
+				echo '3^^';
+				UNLINK($url);
+				$pagoproveedores->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+			}
+		}
+	}else{echo $ADJUNTAR_FACTURA_XML;}
 }
 
-?>
+}else{ echo "no hay usuario seleccionado";}
+}

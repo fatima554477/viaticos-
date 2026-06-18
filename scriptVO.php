@@ -231,13 +231,15 @@ function ajax_file_upload1(file_obj, nombre) {
 
 
 
-               $('#1' + nombre).html(
-
-                    '<a target="_blank" href="includes/archivos/' + archivoSubido + '">Visualizar!</a>' +
-
-                    ' <span id="' + archivoSubido + '" class="view_dataSBborrar2" style="cursor:pointer;color:blue;">Borrar!</span>'
-
-                );
+      var camposFacturaUnica = ['ADJUNTAR_FACTURA_XML', 'ADJUNTAR_FACTURA_PDF'];
+                if (camposFacturaUnica.indexOf(nombre) !== -1) {
+                    $('#1' + nombre).empty();
+                } else {
+                    $('#1' + nombre).html(
+                        '<a target="_blank" href="includes/archivos/' + archivoSubido + '">Visualizar!</a>' +
+                        ' <span id="' + archivoSubido + '" class="view_dataSBborrar2" style="cursor:pointer;color:blue;">Borrar!</span>'
+                    );
+                }
 
                 $('#mensajeADJUNTOCOL').html('<p style="color:green;">✅ ¡Actualizado!</p>');
 
